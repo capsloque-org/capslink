@@ -27,13 +27,13 @@ export default function Navbar() {
                     alignItems: "center",
                     justifyContent: "space-between",
                     padding: "10px 20px",
-                    borderRadius: "16px",
-                    border: "1px solid rgba(45, 45, 74, 0.4)",
-                    background: "rgba(10, 10, 18, 0.65)",
+                    borderRadius: "20px",
+                    border: "1px solid rgba(255, 255, 255, 0.5)",
+                    background: "rgba(255, 255, 255, 0.3)",
                     backdropFilter: "blur(24px)",
                     WebkitBackdropFilter: "blur(24px)",
                     boxShadow:
-                        "0 4px 30px rgba(0, 0, 0, 0.3), 0 0 40px rgba(139, 92, 246, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.03)",
+                        "0 4px 30px rgba(0, 0, 0, 0.06), 0 0 40px rgba(232, 67, 147, 0.04), inset 0 1px 0 rgba(255, 255, 255, 0.6)",
                 }}
             >
                 {/* Logo */}
@@ -51,11 +51,12 @@ export default function Navbar() {
                             width: "32px",
                             height: "32px",
                             borderRadius: "10px",
-                            background: "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+                            background: "linear-gradient(135deg, #e84393, #fd79a8)",
                             display: "flex",
                             alignItems: "center",
                             justifyContent: "center",
                             transition: "transform 0.2s ease",
+                            boxShadow: "0 2px 10px rgba(232, 67, 147, 0.3)",
                         }}
                     >
                         <Zap style={{ width: 15, height: 15, color: "white" }} />
@@ -64,7 +65,7 @@ export default function Navbar() {
                         style={{
                             fontSize: "1.05rem",
                             fontWeight: 800,
-                            color: "#eeeef5",
+                            color: "#1a1a2e",
                             letterSpacing: "-0.02em",
                         }}
                     >
@@ -85,14 +86,15 @@ export default function Navbar() {
                                 alignItems: "center",
                                 gap: "6px",
                                 padding: "7px 14px",
-                                borderRadius: "10px",
-                                border: "1px solid rgba(45, 45, 74, 0.5)",
-                                background: "rgba(20, 20, 34, 0.6)",
-                                color: "#c0c0d0",
+                                borderRadius: "12px",
+                                border: "1px solid rgba(255, 255, 255, 0.5)",
+                                background: "rgba(255, 255, 255, 0.35)",
+                                color: "#4a4a6a",
                                 fontSize: "13px",
                                 fontWeight: 600,
                                 textDecoration: "none",
                                 transition: "all 0.2s ease",
+                                backdropFilter: "blur(8px)",
                             }}
                         >
                             <LayoutDashboard style={{ width: 14, height: 14 }} />
@@ -115,14 +117,15 @@ export default function Navbar() {
                                 alignItems: "center",
                                 gap: "6px",
                                 padding: "7px 14px",
-                                borderRadius: "10px",
-                                border: "1px solid rgba(45, 45, 74, 0.5)",
-                                background: "transparent",
-                                color: "#c0c0d0",
+                                borderRadius: "12px",
+                                border: "1px solid rgba(255, 255, 255, 0.4)",
+                                background: "rgba(255, 255, 255, 0.2)",
+                                color: "#4a4a6a",
                                 fontSize: "13px",
                                 fontWeight: 600,
                                 textDecoration: "none",
                                 transition: "all 0.2s ease",
+                                backdropFilter: "blur(8px)",
                             }}
                         >
                             <LogIn style={{ width: 14, height: 14 }} />
@@ -135,14 +138,14 @@ export default function Navbar() {
                                 alignItems: "center",
                                 gap: "6px",
                                 padding: "7px 16px",
-                                borderRadius: "10px",
-                                background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+                                borderRadius: "12px",
+                                background: "linear-gradient(135deg, #e84393, #fd79a8)",
                                 color: "white",
                                 fontSize: "13px",
                                 fontWeight: 600,
                                 textDecoration: "none",
                                 transition: "all 0.2s ease",
-                                boxShadow: "0 2px 12px rgba(139, 92, 246, 0.3)",
+                                boxShadow: "0 2px 12px rgba(232, 67, 147, 0.3)",
                             }}
                         >
                             Get Started

@@ -1,7 +1,9 @@
 import { supabase } from "@/lib/supabase";
 import { notFound } from "next/navigation";
 import { detectPlatform, PlatformIcon } from "@/lib/socialPlatforms";
-import { Zap, ExternalLink } from "lucide-react";
+import { getTemplate } from "@/lib/profileTemplates";
+import { Zap } from "lucide-react";
+import ClickableLink from "@/components/ClickableLink";
 
 // Dynamic metadata for SEO
 export async function generateMetadata({ params }) {
@@ -55,35 +57,62 @@ export default async function ProfilePage({ params }) {
         .order("order_index", { ascending: true });
 
     const displayName = profile.display_name || profile.username;
+    const template = getTemplate(profile.template);
+    const s = template.styles;
+    const fontFamily = template.font || "var(--font-sans)";
+    const animName = template.animation || "tmpl-fadeIn";
 
-    // Subtle background gradient based on username
-    const hashCode = username
-        .split("")
-        .reduce((a, b) => ((a << 5) - a + b.charCodeAt(0)) | 0, 0);
-    const hue1 = Math.abs(hashCode) % 360;
-    const hue2 = (hue1 + 40) % 360;
+    // Only show links the user explicitly toggled for the social icon row
+    const socialLinks = (links || []).filter((l) => {
+        if (!l.show_icon) return false;
+        const p = detectPlatform(l.url, l.title);
+        return p && p.id !== "website";
+    });
 
     return (
-        <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden" }}>
-            {/* Background gradient */}
-            <div
-                style={{
-                    position: "absolute", inset: 0, opacity: 0.15, pointerEvents: "none",
-                    background: `radial-gradient(ellipse at 30% 20%, hsl(${hue1}, 70%, 30%) 0%, transparent 60%),
-                                 radial-gradient(ellipse at 70% 80%, hsl(${hue2}, 60%, 25%) 0%, transparent 60%)`,
-                }}
-            />
+        <div style={{ minHeight: "100vh", position: "relative", overflow: "hidden", fontFamily, ...s.page }}>
+            {/* Background glow */}
+            {s.glow && s.glow !== "none" && (
+                <div
+                    style={{
+                        position: "absolute", inset: 0, opacity: 0.5, pointerEvents: "none",
+                        background: s.glow,
+                    }}
+                />
+            )}
+
+            {/* Banner Image */}
+            {profile.banner_url && (
+                <div style={{
+                    width: "100%", maxWidth: "480px", margin: "0 auto",
+                    height: "180px", overflow: "hidden",
+                    position: "relative", zIndex: 1,
+                }}>
+                    <img
+                        src={profile.banner_url}
+                        alt=""
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    />
+                    <div style={{
+                        position: "absolute", bottom: 0, left: 0, right: 0, height: "60px",
+                        background: `linear-gradient(to top, ${s.page.background?.includes("gradient") ? "rgba(0,0,0,0.3)" : s.page.background || "#fff"}, transparent)`,
+                    }} />
+                </div>
+            )}
 
             <div
                 style={{
                     position: "relative", zIndex: 1,
                     maxWidth: "480px", margin: "0 auto",
-                    padding: "100px 24px 60px",
+                    padding: profile.banner_url ? "0 24px 60px" : "100px 24px 60px",
                     textAlign: "center",
                 }}
             >
                 {/* Profile Header */}
-                <div className="animate-fade-in" style={{ marginBottom: "36px" }}>
+                <div className="animate-fade-in" style={{
+                    marginBottom: "36px",
+                    marginTop: profile.banner_url ? "-48px" : "0",
+                }}>
                     {/* Avatar */}
                     {profile.avatar_url ? (
                         <img
@@ -92,8 +121,7 @@ export default async function ProfilePage({ params }) {
                             style={{
                                 width: "96px", height: "96px", borderRadius: "50%",
                                 margin: "0 auto 16px", objectFit: "cover",
-                                border: "3px solid rgba(139,92,246,0.3)",
-                                boxShadow: "0 8px 30px rgba(0,0,0,0.3)",
+                                ...s.avatar,
                             }}
                         />
                     ) : (
@@ -101,81 +129,82 @@ export default async function ProfilePage({ params }) {
                             style={{
                                 width: "96px", height: "96px", borderRadius: "50%",
                                 margin: "0 auto 16px",
-                                background: "linear-gradient(135deg, #8b5cf6, #22d3ee)",
                                 display: "flex", alignItems: "center", justifyContent: "center",
-                                color: "white", fontSize: "2rem", fontWeight: 800,
-                                boxShadow: "0 8px 30px rgba(139,92,246,0.3)",
+                                fontSize: "2rem", fontWeight: 800,
+                                ...s.avatar,
+                                ...s.avatarFallback,
                             }}
                         >
                             {displayName.charAt(0).toUpperCase()}
                         </div>
                     )}
 
-                    <h1 style={{ fontSize: "1.5rem", fontWeight: 800, color: "#eeeef5", letterSpacing: "-0.02em" }}>
+                    <h1 style={{ fontSize: "1.5rem", fontWeight: 800, letterSpacing: "-0.02em", ...s.name }}>
                         {displayName}
                     </h1>
-                    <p style={{ fontSize: "0.85rem", color: "#505068", marginTop: "4px" }}>
+                    <p style={{ fontSize: "0.85rem", marginTop: "4px", ...s.username }}>
                         @{profile.username}
                     </p>
 
                     {profile.bio && (
                         <p style={{
-                            fontSize: "0.875rem", color: "#9090ad", marginTop: "12px",
+                            fontSize: "0.875rem", marginTop: "12px",
                             maxWidth: "360px", margin: "12px auto 0", lineHeight: 1.6,
+                            ...s.bio,
                         }}>
                             {profile.bio}
                         </p>
                     )}
                 </div>
 
-                {/* Links */}
-                {links && links.length > 0 ? (
-                    <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "48px" }}>
-                        {links.map((link, index) => {
-                            const platform = detectPlatform(link.url);
+                {/* Social Icons Row */}
+                {socialLinks.length > 0 && (
+                    <div style={{
+                        display: "flex", justifyContent: "center", flexWrap: "wrap",
+                        gap: "10px", marginBottom: "24px",
+                    }}>
+                        {socialLinks.map((link, i) => {
+                            const platform = detectPlatform(link.url, link.title);
                             return (
                                 <a
-                                    key={link.id}
+                                    key={`social-${link.id}`}
                                     href={link.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     className="animate-fade-in"
                                     style={{
-                                        display: "flex", alignItems: "center", gap: "12px",
-                                        padding: "14px 16px", borderRadius: "14px",
-                                        background: "linear-gradient(160deg, rgba(14,14,24,0.9) 0%, rgba(20,20,34,0.6) 100%)",
-                                        border: "1px solid rgba(45,45,74,0.4)",
-                                        backdropFilter: "blur(10px)",
-                                        textDecoration: "none", color: "#eeeef5",
-                                        transition: "all 0.2s ease",
-                                        animationDelay: `${index * 0.06}s`,
-                                    }}
-                                >
-                                    {/* Platform Icon */}
-                                    <div style={{
-                                        width: "36px", height: "36px", borderRadius: "10px",
+                                        width: "40px", height: "40px", borderRadius: "50%",
                                         background: platform.gradient,
                                         display: "flex", alignItems: "center", justifyContent: "center",
-                                        flexShrink: 0,
-                                    }}>
-                                        <PlatformIcon platformId={platform.id} size={16} />
-                                    </div>
-
-                                    <span style={{
-                                        flex: 1, fontSize: "0.9rem", fontWeight: 600,
-                                        textAlign: "left",
-                                        overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap",
-                                    }}>
-                                        {link.title}
-                                    </span>
-
-                                    <ExternalLink style={{ width: 14, height: 14, color: "#505068", flexShrink: 0 }} />
+                                        transition: "transform 0.2s ease, box-shadow 0.2s ease",
+                                        textDecoration: "none",
+                                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+                                        animationDelay: `${i * 0.05}s`,
+                                    }}
+                                    title={platform.name}
+                                >
+                                    <PlatformIcon platformId={platform.id} size={18} />
                                 </a>
                             );
                         })}
                     </div>
+                )}
+
+                {/* Links */}
+                {links && links.length > 0 ? (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "48px" }}>
+                        {links.map((link, index) => (
+                            <ClickableLink
+                                key={link.id}
+                                link={link}
+                                index={index}
+                                styles={s}
+                                animationName={animName}
+                            />
+                        ))}
+                    </div>
                 ) : (
-                    <div style={{ padding: "48px 0", color: "#505068" }}>
+                    <div style={{ padding: "48px 0", ...s.bio }}>
                         <p style={{ fontSize: "0.875rem" }}>No links added yet.</p>
                     </div>
                 )}
@@ -186,8 +215,9 @@ export default async function ProfilePage({ params }) {
                         href="/"
                         style={{
                             display: "inline-flex", alignItems: "center", gap: "6px",
-                            fontSize: "0.75rem", color: "#505068",
+                            fontSize: "0.75rem",
                             textDecoration: "none", transition: "color 0.2s ease",
+                            ...s.footer,
                         }}
                     >
                         <Zap style={{ width: 12, height: 12 }} />

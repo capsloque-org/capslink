@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS profiles (
   display_name TEXT DEFAULT '',
   bio TEXT DEFAULT '',
   avatar_url TEXT DEFAULT '',
+  banner_url TEXT DEFAULT '',
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -20,6 +21,8 @@ CREATE TABLE IF NOT EXISTS links (
   title TEXT NOT NULL,
   url TEXT NOT NULL,
   order_index INTEGER DEFAULT 0,
+  clicks INTEGER DEFAULT 0,
+  show_icon BOOLEAN DEFAULT false,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
@@ -69,3 +72,11 @@ CREATE POLICY "Users can update own links"
 CREATE POLICY "Users can delete own links"
   ON links FOR DELETE
   USING (true);
+
+-- ============================================
+-- Migration: Add banner_url and clicks columns
+-- Run these if upgrading an existing database
+-- ============================================
+-- ALTER TABLE profiles ADD COLUMN IF NOT EXISTS banner_url TEXT DEFAULT '';
+-- ALTER TABLE links ADD COLUMN IF NOT EXISTS clicks INTEGER DEFAULT 0;
+-- ALTER TABLE links ADD COLUMN IF NOT EXISTS show_icon BOOLEAN DEFAULT false;

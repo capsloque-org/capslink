@@ -2,12 +2,13 @@
 
 import { useState } from "react";
 import { supabase } from "@/lib/supabase";
-import { User, FileText, Image, Save, Loader2, Check } from "lucide-react";
+import { User, FileText, Image, Save, Loader2, Check, ImageIcon } from "lucide-react";
 
 export default function ProfileEditor({ profile, onUpdate }) {
     const [displayName, setDisplayName] = useState(profile.display_name || "");
     const [bio, setBio] = useState(profile.bio || "");
     const [avatarUrl, setAvatarUrl] = useState(profile.avatar_url || "");
+    const [bannerUrl, setBannerUrl] = useState(profile.banner_url || "");
     const [saving, setSaving] = useState(false);
     const [saved, setSaved] = useState(false);
 
@@ -22,41 +23,44 @@ export default function ProfileEditor({ profile, onUpdate }) {
                 display_name: displayName,
                 bio: bio,
                 avatar_url: avatarUrl,
+                banner_url: bannerUrl,
             })
             .eq("id", profile.id);
 
         setSaving(false);
         if (!error) {
             setSaved(true);
-            onUpdate({ ...profile, display_name: displayName, bio, avatar_url: avatarUrl });
+            onUpdate({ ...profile, display_name: displayName, bio, avatar_url: avatarUrl, banner_url: bannerUrl });
             setTimeout(() => setSaved(false), 2000);
         }
     };
 
     const cardStyle = {
-        borderRadius: "20px",
-        border: "1px solid rgba(45,45,74,0.4)",
-        background: "linear-gradient(160deg, rgba(14,14,24,0.95) 0%, rgba(20,20,34,0.7) 100%)",
+        borderRadius: "24px",
+        border: "1px solid rgba(255,255,255,0.5)",
+        background: "rgba(255,255,255,0.22)",
         backdropFilter: "blur(24px)",
         padding: "28px",
+        boxShadow: "0 8px 32px rgba(232,67,147,0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
     };
 
     const labelStyle = {
-        fontSize: "13px", color: "#9090ad", marginBottom: "8px",
+        fontSize: "13px", color: "#6b6b8a", marginBottom: "8px",
         display: "flex", alignItems: "center", gap: "6px", fontWeight: 500,
     };
 
     const inputStyle = {
-        width: "100%", padding: "12px 14px", borderRadius: "10px",
-        border: "1px solid rgba(45,45,74,0.5)", background: "rgba(6,6,11,0.8)",
-        color: "#eeeef5", fontSize: "0.9rem", outline: "none",
-        transition: "border-color 0.2s ease", boxSizing: "border-box",
+        width: "100%", padding: "12px 14px", borderRadius: "12px",
+        border: "1px solid rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.4)",
+        color: "#1a1a2e", fontSize: "0.9rem", outline: "none",
+        transition: "border-color 0.2s ease, background 0.2s ease", boxSizing: "border-box",
+        backdropFilter: "blur(8px)",
     };
 
     return (
         <div className="animate-fade-in" style={cardStyle}>
-            <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#eeeef5", marginBottom: "24px", display: "flex", alignItems: "center", gap: "8px" }}>
-                <User style={{ width: 18, height: 18, color: "#a78bfa" }} />
+            <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a2e", marginBottom: "24px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <User style={{ width: 18, height: 18, color: "#e84393" }} />
                 Profile Settings
             </h3>
 
@@ -65,10 +69,11 @@ export default function ProfileEditor({ profile, onUpdate }) {
                 <div style={{ display: "flex", alignItems: "flex-start", gap: "16px", marginBottom: "20px" }}>
                     <div
                         style={{
-                            width: "72px", height: "72px", borderRadius: "16px",
-                            background: "rgba(14,14,24,0.8)", border: "1px solid rgba(45,45,74,0.5)",
+                            width: "72px", height: "72px", borderRadius: "18px",
+                            background: "rgba(255,255,255,0.35)", border: "1px solid rgba(255,255,255,0.5)",
                             flexShrink: 0, overflow: "hidden", display: "flex",
                             alignItems: "center", justifyContent: "center",
+                            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.5)",
                         }}
                     >
                         {avatarUrl ? (
@@ -79,7 +84,7 @@ export default function ProfileEditor({ profile, onUpdate }) {
                                 onError={(e) => (e.target.style.display = "none")}
                             />
                         ) : (
-                            <Image style={{ width: 28, height: 28, color: "#505068" }} />
+                            <Image style={{ width: 28, height: 28, color: "#9a9ab5" }} />
                         )}
                     </div>
                     <div style={{ flex: 1 }}>
@@ -92,6 +97,35 @@ export default function ProfileEditor({ profile, onUpdate }) {
                             style={inputStyle}
                         />
                     </div>
+                </div>
+
+                {/* Banner Image URL */}
+                <div style={{ marginBottom: "20px" }}>
+                    <label style={labelStyle}>
+                        <ImageIcon style={{ width: 13, height: 13 }} />
+                        Banner Image URL
+                    </label>
+                    {bannerUrl && (
+                        <div style={{
+                            width: "100%", height: "80px", borderRadius: "12px",
+                            overflow: "hidden", marginBottom: "8px",
+                            border: "1px solid rgba(255,255,255,0.5)",
+                        }}>
+                            <img
+                                src={bannerUrl}
+                                alt="Banner preview"
+                                style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                                onError={(e) => (e.target.style.display = "none")}
+                            />
+                        </div>
+                    )}
+                    <input
+                        type="url"
+                        value={bannerUrl}
+                        onChange={(e) => setBannerUrl(e.target.value)}
+                        placeholder="https://example.com/banner.jpg"
+                        style={inputStyle}
+                    />
                 </div>
 
                 {/* Display Name */}
@@ -124,7 +158,7 @@ export default function ProfileEditor({ profile, onUpdate }) {
                         maxLength={200}
                         style={{ ...inputStyle, resize: "none" }}
                     />
-                    <p style={{ fontSize: "11px", color: "#505068", marginTop: "4px", textAlign: "right" }}>
+                    <p style={{ fontSize: "11px", color: "#9a9ab5", marginTop: "4px", textAlign: "right" }}>
                         {bio.length}/200
                     </p>
                 </div>
@@ -135,13 +169,13 @@ export default function ProfileEditor({ profile, onUpdate }) {
                     disabled={saving}
                     style={{
                         width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
-                        padding: "12px", borderRadius: "12px", border: "none",
-                        background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+                        padding: "12px", borderRadius: "14px", border: "none",
+                        background: "linear-gradient(135deg, #e84393, #fd79a8)",
                         color: "white", fontSize: "0.9rem", fontWeight: 700,
                         cursor: saving ? "not-allowed" : "pointer",
                         opacity: saving ? 0.6 : 1,
                         transition: "all 0.2s ease",
-                        boxShadow: "0 4px 20px rgba(139,92,246,0.3)",
+                        boxShadow: "0 4px 20px rgba(232,67,147,0.3)",
                     }}
                 >
                     {saving ? (

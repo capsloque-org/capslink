@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabase";
 import { SOCIAL_PLATFORMS, detectPlatform, PlatformIcon } from "@/lib/socialPlatforms";
 import {
     Plus, Trash2, ChevronUp, ChevronDown, ExternalLink,
-    Pencil, X, Check, Loader2, Link2, ChevronDown as SelectArrow,
+    Pencil, X, Check, Loader2, Link2, ChevronDown as SelectArrow, BarChart3, CircleDot,
 } from "lucide-react";
 
 export default function LinkManager({ links: initialLinks, userId, onLinksChange }) {
@@ -18,6 +18,19 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
     const [editTitle, setEditTitle] = useState("");
     const [editUrl, setEditUrl] = useState("");
     const [showAddForm, setShowAddForm] = useState(false);
+    const [clickCounts, setClickCounts] = useState({});
+
+    // Fetch click counts
+    useEffect(() => {
+        if (userId) {
+            fetch(`/api/clicks?userId=${userId}`)
+                .then((res) => res.json())
+                .then((data) => {
+                    if (data.clicks) setClickCounts(data.clicks);
+                })
+                .catch(() => {});
+        }
+    }, [userId, links]);
 
     const updateLinks = (newLinks) => {
         setLinks(newLinks);
@@ -97,25 +110,38 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
         ]);
     };
 
+    const toggleShowIcon = async (link) => {
+        const newVal = !link.show_icon;
+        const { error } = await supabase
+            .from("links")
+            .update({ show_icon: newVal })
+            .eq("id", link.id);
+        if (!error) {
+            updateLinks(links.map((l) => (l.id === link.id ? { ...l, show_icon: newVal } : l)));
+        }
+    };
+
     const cardStyle = {
-        borderRadius: "20px",
-        border: "1px solid rgba(45,45,74,0.4)",
-        background: "linear-gradient(160deg, rgba(14,14,24,0.95) 0%, rgba(20,20,34,0.7) 100%)",
+        borderRadius: "24px",
+        border: "1px solid rgba(255,255,255,0.5)",
+        background: "rgba(255,255,255,0.22)",
         backdropFilter: "blur(24px)",
         padding: "28px",
+        boxShadow: "0 8px 32px rgba(232,67,147,0.04), inset 0 1px 0 rgba(255,255,255,0.6)",
     };
 
     const inputStyle = {
         width: "100%", padding: "10px 14px", borderRadius: "10px",
-        border: "1px solid rgba(45,45,74,0.5)", background: "rgba(6,6,11,0.8)",
-        color: "#eeeef5", fontSize: "0.85rem", outline: "none",
+        border: "1px solid rgba(255,255,255,0.5)", background: "rgba(255,255,255,0.4)",
+        color: "#1a1a2e", fontSize: "0.85rem", outline: "none",
         transition: "border-color 0.2s ease", boxSizing: "border-box",
+        backdropFilter: "blur(8px)",
     };
 
     const selectStyle = {
         ...inputStyle,
         appearance: "none",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%239090ad' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
+        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
         backgroundRepeat: "no-repeat",
         backgroundPosition: "right 12px center",
         paddingRight: "36px",
@@ -124,29 +150,29 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
 
     const smallBtnStyle = {
         display: "flex", alignItems: "center", justifyContent: "center",
-        padding: "6px", borderRadius: "8px", border: "none",
-        background: "rgba(45,45,74,0.3)", color: "#9090ad",
+        padding: "6px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.3)",
+        background: "rgba(255,255,255,0.25)", color: "#6b6b8a",
         cursor: "pointer", transition: "all 0.2s ease",
     };
 
     return (
         <div className="animate-fade-in" style={cardStyle}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "24px" }}>
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#eeeef5", display: "flex", alignItems: "center", gap: "8px" }}>
-                    <Link2 style={{ width: 18, height: 18, color: "#a78bfa" }} />
+                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a2e", display: "flex", alignItems: "center", gap: "8px" }}>
+                    <Link2 style={{ width: 18, height: 18, color: "#e84393" }} />
                     Your Links
-                    <span style={{ fontSize: "0.85rem", color: "#505068", fontWeight: 400 }}>({links.length})</span>
+                    <span style={{ fontSize: "0.85rem", color: "#9a9ab5", fontWeight: 400 }}>({links.length})</span>
                 </h3>
                 <button
                     onClick={() => setShowAddForm(!showAddForm)}
                     style={{
                         display: "inline-flex", alignItems: "center", gap: "6px",
-                        padding: "8px 14px", borderRadius: "10px", border: "none",
-                        background: showAddForm ? "rgba(45,45,74,0.4)" : "linear-gradient(135deg, #8b5cf6, #7c3aed)",
-                        color: showAddForm ? "#9090ad" : "white",
+                        padding: "8px 14px", borderRadius: "12px", border: "none",
+                        background: showAddForm ? "rgba(255,255,255,0.3)" : "linear-gradient(135deg, #e84393, #fd79a8)",
+                        color: showAddForm ? "#6b6b8a" : "white",
                         fontSize: "13px", fontWeight: 600, cursor: "pointer",
                         transition: "all 0.2s ease",
-                        boxShadow: showAddForm ? "none" : "0 2px 12px rgba(139,92,246,0.3)",
+                        boxShadow: showAddForm ? "none" : "0 2px 12px rgba(232,67,147,0.3)",
                     }}
                 >
                     {showAddForm ? <X style={{ width: 14, height: 14 }} /> : <Plus style={{ width: 14, height: 14 }} />}
@@ -160,14 +186,15 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                     onSubmit={handleAdd}
                     className="animate-fade-in"
                     style={{
-                        marginBottom: "24px", padding: "16px", borderRadius: "14px",
-                        background: "rgba(6,6,11,0.6)", border: "1px solid rgba(45,45,74,0.4)",
+                        marginBottom: "24px", padding: "16px", borderRadius: "16px",
+                        background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)",
+                        backdropFilter: "blur(12px)",
                         display: "flex", flexDirection: "column", gap: "10px",
                     }}
                 >
                     {/* Platform Dropdown */}
                     <div>
-                        <label style={{ fontSize: "12px", color: "#9090ad", marginBottom: "6px", display: "block", fontWeight: 500 }}>
+                        <label style={{ fontSize: "12px", color: "#6b6b8a", marginBottom: "6px", display: "block", fontWeight: 500 }}>
                             Platform
                         </label>
                         <select
@@ -186,11 +213,11 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                     {selectedPlatform && selectedPlatform !== "website" && (
                         <div style={{
                             display: "flex", alignItems: "center", gap: "8px",
-                            padding: "8px 12px", borderRadius: "8px",
-                            background: "rgba(139,92,246,0.08)", border: "1px solid rgba(139,92,246,0.15)",
+                            padding: "8px 12px", borderRadius: "10px",
+                            background: "rgba(232,67,147,0.08)", border: "1px solid rgba(232,67,147,0.15)",
                         }}>
                             <PlatformIcon platformId={selectedPlatform} size={16} />
-                            <span style={{ fontSize: "12px", color: "#c4b5fd", fontWeight: 500 }}>
+                            <span style={{ fontSize: "12px", color: "#e84393", fontWeight: 500 }}>
                                 {SOCIAL_PLATFORMS.find(p => p.id === selectedPlatform)?.name}
                             </span>
                         </div>
@@ -203,11 +230,12 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                         disabled={adding || !newTitle.trim() || !newUrl.trim()}
                         style={{
                             width: "100%", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px",
-                            padding: "10px", borderRadius: "10px", border: "none",
-                            background: (!newTitle.trim() || !newUrl.trim()) ? "rgba(45,45,74,0.4)" : "linear-gradient(135deg, #8b5cf6, #7c3aed)",
-                            color: (!newTitle.trim() || !newUrl.trim()) ? "#505068" : "white",
+                            padding: "10px", borderRadius: "12px", border: "none",
+                            background: (!newTitle.trim() || !newUrl.trim()) ? "rgba(255,255,255,0.3)" : "linear-gradient(135deg, #e84393, #fd79a8)",
+                            color: (!newTitle.trim() || !newUrl.trim()) ? "#9a9ab5" : "white",
                             fontSize: "0.85rem", fontWeight: 700, cursor: (!newTitle.trim() || !newUrl.trim()) ? "not-allowed" : "pointer",
                             transition: "all 0.2s ease",
+                            boxShadow: (!newTitle.trim() || !newUrl.trim()) ? "none" : "0 2px 12px rgba(232,67,147,0.25)",
                         }}
                     >
                         {adding ? <Loader2 style={{ width: 14, height: 14, animation: "spin 1s linear infinite" }} /> : <><Plus style={{ width: 14, height: 14 }} /> Add Link</>}
@@ -217,22 +245,23 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
 
             {/* Links List */}
             {links.length === 0 ? (
-                <div style={{ textAlign: "center", padding: "48px 0", color: "#505068" }}>
+                <div style={{ textAlign: "center", padding: "48px 0", color: "#9a9ab5" }}>
                     <Link2 style={{ width: 36, height: 36, margin: "0 auto 12px", opacity: 0.4 }} />
                     <p style={{ fontSize: "0.875rem" }}>No links yet. Add your first one!</p>
                 </div>
             ) : (
                 <div style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
                     {links.map((link, index) => {
-                        const platform = detectPlatform(link.url);
+                        const platform = detectPlatform(link.url, link.title);
                         return (
                             <div
                                 key={link.id}
                                 style={{
                                     display: "flex", alignItems: "center", gap: "10px",
-                                    padding: "12px", borderRadius: "12px",
-                                    background: "rgba(14,14,24,0.6)",
-                                    border: "1px solid rgba(45,45,74,0.3)",
+                                    padding: "12px", borderRadius: "14px",
+                                    background: "rgba(255,255,255,0.2)",
+                                    border: "1px solid rgba(255,255,255,0.4)",
+                                    backdropFilter: "blur(8px)",
                                     transition: "all 0.2s ease",
                                 }}
                             >
@@ -265,10 +294,24 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                                         </div>
                                     ) : (
                                         <>
-                                            <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "#eeeef5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                                                {link.title}
-                                            </p>
-                                            <p style={{ fontSize: "0.75rem", color: "#505068", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: "2px" }}>
+                                            <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                                                <p style={{ fontSize: "0.875rem", fontWeight: 600, color: "#1a1a2e", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                                                    {link.title}
+                                                </p>
+                                                {(clickCounts[link.id] || 0) > 0 && (
+                                                    <span style={{
+                                                        display: "inline-flex", alignItems: "center", gap: "3px",
+                                                        padding: "2px 7px", borderRadius: "8px",
+                                                        background: "rgba(232,67,147,0.1)",
+                                                        color: "#e84393", fontSize: "0.65rem", fontWeight: 700,
+                                                        flexShrink: 0,
+                                                    }}>
+                                                        <BarChart3 style={{ width: 10, height: 10 }} />
+                                                        {clickCounts[link.id]}
+                                                    </span>
+                                                )}
+                                            </div>
+                                            <p style={{ fontSize: "0.75rem", color: "#9a9ab5", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", marginTop: "2px" }}>
                                                 {link.url}
                                             </p>
                                         </>
@@ -279,7 +322,7 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                                 <div style={{ display: "flex", alignItems: "center", gap: "4px", flexShrink: 0 }}>
                                     {editingId === link.id ? (
                                         <>
-                                            <button onClick={saveEdit} style={{ ...smallBtnStyle, color: "#22c55e" }}>
+                                            <button onClick={saveEdit} style={{ ...smallBtnStyle, color: "#00b894" }}>
                                                 <Check style={{ width: 14, height: 14 }} />
                                             </button>
                                             <button onClick={() => setEditingId(null)} style={smallBtnStyle}>
@@ -288,13 +331,25 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                                         </>
                                     ) : (
                                         <>
+                                            <button
+                                                onClick={() => toggleShowIcon(link)}
+                                                title={link.show_icon ? "Hide from social row" : "Show in social row"}
+                                                style={{
+                                                    ...smallBtnStyle,
+                                                    color: link.show_icon ? "#e84393" : "#6b6b8a",
+                                                    background: link.show_icon ? "rgba(232,67,147,0.12)" : "rgba(255,255,255,0.25)",
+                                                    border: link.show_icon ? "1px solid rgba(232,67,147,0.3)" : "1px solid rgba(255,255,255,0.3)",
+                                                }}
+                                            >
+                                                <CircleDot style={{ width: 14, height: 14 }} />
+                                            </button>
                                             <a href={link.url} target="_blank" rel="noopener noreferrer" style={smallBtnStyle}>
                                                 <ExternalLink style={{ width: 14, height: 14 }} />
                                             </a>
                                             <button onClick={() => startEdit(link)} style={smallBtnStyle}>
                                                 <Pencil style={{ width: 14, height: 14 }} />
                                             </button>
-                                            <button onClick={() => handleDelete(link.id)} style={{ ...smallBtnStyle, color: "#ef4444" }}>
+                                            <button onClick={() => handleDelete(link.id)} style={{ ...smallBtnStyle, color: "#ff6b6b" }}>
                                                 <Trash2 style={{ width: 14, height: 14 }} />
                                             </button>
                                         </>

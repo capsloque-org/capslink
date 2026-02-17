@@ -10,6 +10,10 @@ import {
     Sparkles,
     Globe,
     Layers,
+    Instagram,
+    Crown,
+    TrendingUp,
+    Star,
 } from "lucide-react";
 
 export default function HomePage() {
@@ -17,38 +21,38 @@ export default function HomePage() {
         {
             icon: Link2,
             title: "Unlimited Links",
-            desc: "Add as many links as you need — no limits, no restrictions, ever.",
-            gradient: "from-violet-500 to-purple-600",
+            desc: "Add as many links as you need — your content, collabs, merch, and more.",
+            color: "#e84393",
         },
         {
             icon: Palette,
-            title: "Bento Grid Design",
-            desc: "A stunning, modern layout that makes your brand truly stand out.",
-            gradient: "from-cyan-500 to-blue-600",
+            title: "Stunning Bento Grid",
+            desc: "A gorgeous layout that makes your brand pop and keeps followers engaged.",
+            color: "#a29bfe",
         },
         {
             icon: BarChart3,
             title: "SEO Optimized",
             desc: "Server-rendered pages so your profile ranks higher on search engines.",
-            gradient: "from-emerald-500 to-teal-600",
+            color: "#fd79a8",
         },
         {
             icon: Shield,
             title: "Secure Auth",
-            desc: "Enterprise-grade authentication powered by Clerk. Your data is safe.",
-            gradient: "from-amber-500 to-orange-600",
+            desc: "Enterprise-grade authentication. Your data stays safe, always.",
+            color: "#6c5ce7",
         },
         {
             icon: Smartphone,
-            title: "Mobile First",
-            desc: "Perfectly optimized for every screen — from phones to ultrawide.",
-            gradient: "from-pink-500 to-rose-600",
+            title: "Mobile Perfect",
+            desc: "Flawless on every screen — from stories to ultrawide displays.",
+            color: "#e84393",
         },
         {
             icon: Zap,
             title: "Lightning Fast",
-            desc: "Built on Next.js with edge delivery for blazing performance.",
-            gradient: "from-yellow-500 to-amber-600",
+            desc: "Built on Next.js with edge delivery for blazing-fast performance.",
+            color: "#fd79a8",
         },
     ];
 
@@ -59,57 +63,124 @@ export default function HomePage() {
     ];
 
     return (
-        <div className="min-h-screen noise-bg grid-bg">
+        <div className="min-h-screen noise-bg">
 
             {/* ===== HERO ===== */}
             <section className="relative overflow-hidden" style={{ paddingTop: "140px", paddingBottom: "100px" }}>
-                {/* Background orbs */}
+                {/* Animated gradient blobs */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                     <div
-                        className="absolute rounded-full animate-pulse"
+                        className="animate-blob"
                         style={{
-                            top: "-100px", left: "10%", width: "500px", height: "500px",
-                            background: "radial-gradient(circle, rgba(139,92,246,0.12) 0%, transparent 70%)",
+                            position: "absolute",
+                            top: "-80px", left: "5%", width: "500px", height: "500px",
+                            borderRadius: "50%",
+                            background: "radial-gradient(circle, rgba(232,67,147,0.18) 0%, transparent 70%)",
                             filter: "blur(80px)",
                         }}
                     />
                     <div
-                        className="absolute rounded-full animate-pulse"
+                        className="animate-blob"
                         style={{
-                            top: "30%", right: "-5%", width: "400px", height: "400px",
-                            background: "radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%)",
-                            filter: "blur(60px)",
-                            animationDelay: "2s",
-                        }}
-                    />
-                    <div
-                        className="absolute rounded-full animate-pulse"
-                        style={{
-                            bottom: "-80px", left: "40%", width: "350px", height: "350px",
-                            background: "radial-gradient(circle, rgba(59,130,246,0.06) 0%, transparent 70%)",
-                            filter: "blur(60px)",
+                            position: "absolute",
+                            top: "20%", right: "0%", width: "450px", height: "450px",
+                            borderRadius: "50%",
+                            background: "radial-gradient(circle, rgba(162,155,254,0.15) 0%, transparent 70%)",
+                            filter: "blur(70px)",
                             animationDelay: "4s",
                         }}
                     />
+                    <div
+                        className="animate-blob"
+                        style={{
+                            position: "absolute",
+                            bottom: "-60px", left: "35%", width: "400px", height: "400px",
+                            borderRadius: "50%",
+                            background: "radial-gradient(circle, rgba(253,121,168,0.12) 0%, transparent 70%)",
+                            filter: "blur(60px)",
+                            animationDelay: "8s",
+                        }}
+                    />
+
+                    {/* Floating glass decorations */}
+                    <div
+                        className="animate-float"
+                        style={{
+                            position: "absolute", top: "15%", left: "8%",
+                            width: "60px", height: "60px", borderRadius: "18px",
+                            background: "rgba(255,255,255,0.15)",
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255,255,255,0.3)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                        }}
+                    >
+                        <Instagram style={{ width: 24, height: 24, color: "#e84393", opacity: 0.7 }} />
+                    </div>
+
+                    <div
+                        className="animate-float"
+                        style={{
+                            position: "absolute", top: "25%", right: "10%",
+                            width: "50px", height: "50px", borderRadius: "14px",
+                            background: "rgba(255,255,255,0.12)",
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255,255,255,0.25)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            animationDelay: "2s",
+                        }}
+                    >
+                        <Crown style={{ width: 20, height: 20, color: "#a29bfe", opacity: 0.7 }} />
+                    </div>
+
+                    <div
+                        className="animate-float"
+                        style={{
+                            position: "absolute", bottom: "20%", left: "15%",
+                            width: "44px", height: "44px", borderRadius: "12px",
+                            background: "rgba(255,255,255,0.1)",
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            animationDelay: "3s",
+                        }}
+                    >
+                        <TrendingUp style={{ width: 18, height: 18, color: "#fd79a8", opacity: 0.7 }} />
+                    </div>
+
+                    <div
+                        className="animate-float"
+                        style={{
+                            position: "absolute", bottom: "30%", right: "8%",
+                            width: "48px", height: "48px", borderRadius: "14px",
+                            background: "rgba(255,255,255,0.1)",
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255,255,255,0.2)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            animationDelay: "5s",
+                        }}
+                    >
+                        <Star style={{ width: 20, height: 20, color: "#e84393", opacity: 0.7 }} />
+                    </div>
                 </div>
 
-                <div className="relative" style={{ maxWidth: "720px", margin: "0 auto", padding: "0 24px", textAlign: "center" }}>
+                <div className="relative" style={{ maxWidth: "760px", margin: "0 auto", padding: "0 24px", textAlign: "center" }}>
                     {/* Badge */}
                     <div
                         className="animate-fade-in-up"
                         style={{
                             display: "inline-flex", alignItems: "center", gap: "10px",
-                            padding: "10px 20px", borderRadius: "9999px",
-                            border: "1px solid rgba(45,45,74,0.5)",
-                            background: "rgba(14,14,24,0.6)",
+                            padding: "10px 22px", borderRadius: "9999px",
+                            border: "1px solid rgba(255,255,255,0.5)",
+                            background: "rgba(255,255,255,0.3)",
                             backdropFilter: "blur(16px)",
                             marginBottom: "40px",
+                            boxShadow: "0 2px 12px rgba(232,67,147,0.06), inset 0 1px 0 rgba(255,255,255,0.5)",
                         }}
                     >
-                        <Sparkles style={{ width: 16, height: 16, color: "#a78bfa" }} />
-                        <span style={{ fontSize: "14px", color: "#9090ad" }}>
+                        <Sparkles style={{ width: 16, height: 16, color: "#e84393" }} />
+                        <span style={{ fontSize: "14px", color: "#6b6b8a" }}>
                             Built by{" "}
-                            <span style={{ color: "#eeeef5", fontWeight: 700, letterSpacing: "0.5px" }}>
+                            <span style={{ color: "#1a1a2e", fontWeight: 700, letterSpacing: "0.5px" }}>
                                 CAPSLOQUE
                             </span>
                         </span>
@@ -125,11 +196,14 @@ export default function HomePage() {
                             letterSpacing: "-0.03em",
                             marginBottom: "24px",
                             animationDelay: "0.1s",
+                            color: "#1a1a2e",
                         }}
                     >
-                        One Link.
+                        Your Brand.
                         <br />
-                        <span className="gradient-text">Infinite Reach.</span>
+                        <span className="gradient-text">One Link.</span>
+                        <br />
+                        <span style={{ fontSize: "0.7em", color: "#4a4a6a" }}>Unlimited Influence.</span>
                     </h1>
 
                     {/* Subheading */}
@@ -137,15 +211,15 @@ export default function HomePage() {
                         className="animate-fade-in-up"
                         style={{
                             fontSize: "clamp(1rem, 2.5vw, 1.25rem)",
-                            color: "#9090ad",
-                            maxWidth: "500px",
+                            color: "#6b6b8a",
+                            maxWidth: "520px",
                             margin: "0 auto 48px",
                             lineHeight: 1.7,
                             animationDelay: "0.2s",
                         }}
                     >
                         Create a stunning link-in-bio page in seconds. Share everything
-                        you create, curate, and sell — all from one beautiful page.
+                        you create, promote, and sell — all from one beautiful page designed for influencers.
                     </p>
 
                     {/* CTAs */}
@@ -156,21 +230,27 @@ export default function HomePage() {
                             gap: "14px", marginBottom: "56px", animationDelay: "0.3s",
                         }}
                     >
-                        <Link href="/sign-up" className="btn-primary" style={{ padding: "14px 32px", fontSize: "0.95rem" }}>
+                        <Link href="/sign-up" className="btn-primary" style={{ padding: "16px 36px", fontSize: "1rem" }}>
                             Get Started Free
                             <ArrowRight style={{ width: 18, height: 18 }} />
                         </Link>
-                        <Link href="/dashboard" className="btn-outline" style={{ padding: "14px 32px", fontSize: "0.95rem" }}>
+                        <Link href="/dashboard" className="btn-outline" style={{ padding: "16px 36px", fontSize: "1rem" }}>
                             <Layers style={{ width: 18, height: 18 }} />
                             Go to Dashboard
                         </Link>
                     </div>
 
-                    {/* Stats strip */}
+                    {/* Stats strip — glass card */}
                     <div
                         className="animate-fade-in-up"
                         style={{
-                            display: "flex", justifyContent: "center", gap: "48px",
+                            display: "inline-flex", justifyContent: "center", gap: "48px",
+                            padding: "20px 40px",
+                            borderRadius: "20px",
+                            background: "rgba(255,255,255,0.25)",
+                            backdropFilter: "blur(16px)",
+                            border: "1px solid rgba(255,255,255,0.45)",
+                            boxShadow: "0 4px 20px rgba(0,0,0,0.04), inset 0 1px 0 rgba(255,255,255,0.5)",
                             animationDelay: "0.4s",
                         }}
                     >
@@ -179,7 +259,7 @@ export default function HomePage() {
                                 <div className="gradient-text-static" style={{ fontSize: "clamp(1.5rem, 3vw, 2rem)", fontWeight: 900 }}>
                                     {s.value}
                                 </div>
-                                <div style={{ fontSize: "13px", color: "#505068", marginTop: "4px" }}>
+                                <div style={{ fontSize: "13px", color: "#9a9ab5", marginTop: "4px" }}>
                                     {s.label}
                                 </div>
                             </div>
@@ -196,23 +276,24 @@ export default function HomePage() {
                         <div
                             style={{
                                 display: "inline-flex", alignItems: "center", gap: "8px",
-                                padding: "8px 16px", borderRadius: "9999px",
-                                border: "1px solid rgba(28,28,48,0.8)",
-                                background: "rgba(14,14,24,0.5)",
+                                padding: "8px 18px", borderRadius: "9999px",
+                                border: "1px solid rgba(255,255,255,0.45)",
+                                background: "rgba(255,255,255,0.25)",
+                                backdropFilter: "blur(10px)",
                                 marginBottom: "24px",
                             }}
                         >
-                            <Globe style={{ width: 14, height: 14, color: "#22d3ee" }} />
-                            <span style={{ fontSize: "11px", color: "#505068", fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px" }}>
+                            <Globe style={{ width: 14, height: 14, color: "#e84393" }} />
+                            <span style={{ fontSize: "11px", color: "#9a9ab5", fontWeight: 700, textTransform: "uppercase", letterSpacing: "2px" }}>
                                 Features
                             </span>
                         </div>
-                        <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "16px" }}>
+                        <h2 style={{ fontSize: "clamp(1.75rem, 4vw, 2.75rem)", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "16px", color: "#1a1a2e" }}>
                             Everything you need to
                             <br />
                             <span className="gradient-text-static">stand out</span>
                         </h2>
-                        <p style={{ fontSize: "clamp(0.9rem, 2vw, 1.1rem)", color: "#9090ad", maxWidth: "440px", margin: "0 auto" }}>
+                        <p style={{ fontSize: "clamp(0.9rem, 2vw, 1.1rem)", color: "#6b6b8a", maxWidth: "440px", margin: "0 auto" }}>
                             Powerful tools to build, customize, and share your unique link-in-bio page.
                         </p>
                     </div>
@@ -234,26 +315,24 @@ export default function HomePage() {
                                     style={{ padding: "32px", animationDelay: `${0.08 * i}s` }}
                                 >
                                     <div
-                                        className={`bg-gradient-to-br ${feature.gradient}`}
                                         style={{
-                                            width: "48px", height: "48px", borderRadius: "14px",
+                                            width: "48px", height: "48px", borderRadius: "16px",
+                                            background: `linear-gradient(135deg, ${feature.color}22, ${feature.color}11)`,
                                             display: "flex", alignItems: "center", justifyContent: "center",
-                                            marginBottom: "20px", opacity: 0.2,
-                                            position: "relative",
+                                            marginBottom: "20px",
+                                            border: `1px solid ${feature.color}20`,
                                         }}
                                     >
                                         <Icon
                                             style={{
-                                                width: 22, height: 22, color: "#c4b5fd",
-                                                position: "absolute", top: "50%", left: "50%",
-                                                transform: "translate(-50%, -50%)",
+                                                width: 22, height: 22, color: feature.color,
                                             }}
                                         />
                                     </div>
-                                    <h3 style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: "8px", color: "#eeeef5" }}>
+                                    <h3 style={{ fontSize: "1.05rem", fontWeight: 700, marginBottom: "8px", color: "#1a1a2e" }}>
                                         {feature.title}
                                     </h3>
-                                    <p style={{ fontSize: "0.875rem", color: "#9090ad", lineHeight: 1.6 }}>
+                                    <p style={{ fontSize: "0.875rem", color: "#6b6b8a", lineHeight: 1.6 }}>
                                         {feature.desc}
                                     </p>
                                 </div>
@@ -274,14 +353,14 @@ export default function HomePage() {
                         <div
                             style={{
                                 position: "absolute", top: 0, right: 0, width: "200px", height: "200px",
-                                background: "radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)",
+                                background: "radial-gradient(circle, rgba(232,67,147,0.1) 0%, transparent 70%)",
                                 filter: "blur(60px)", pointerEvents: "none",
                             }}
                         />
                         <div
                             style={{
                                 position: "absolute", bottom: 0, left: 0, width: "150px", height: "150px",
-                                background: "radial-gradient(circle, rgba(34,211,238,0.08) 0%, transparent 70%)",
+                                background: "radial-gradient(circle, rgba(162,155,254,0.1) 0%, transparent 70%)",
                                 filter: "blur(50px)", pointerEvents: "none",
                             }}
                         />
@@ -290,20 +369,21 @@ export default function HomePage() {
                             <div
                                 className="animate-float"
                                 style={{
-                                    width: "56px", height: "56px", borderRadius: "16px",
-                                    background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(34,211,238,0.1))",
+                                    width: "56px", height: "56px", borderRadius: "18px",
+                                    background: "linear-gradient(135deg, rgba(232,67,147,0.15), rgba(162,155,254,0.1))",
+                                    border: "1px solid rgba(255,255,255,0.3)",
                                     display: "flex", alignItems: "center", justifyContent: "center",
                                     margin: "0 auto 24px",
                                 }}
                             >
-                                <Zap style={{ width: 24, height: 24, color: "#c4b5fd" }} />
+                                <Zap style={{ width: 24, height: 24, color: "#e84393" }} />
                             </div>
-                            <h2 style={{ fontSize: "clamp(1.5rem, 3.5vw, 2.25rem)", fontWeight: 700, marginBottom: "14px", letterSpacing: "-0.02em" }}>
+                            <h2 style={{ fontSize: "clamp(1.5rem, 3.5vw, 2.25rem)", fontWeight: 700, marginBottom: "14px", letterSpacing: "-0.02em", color: "#1a1a2e" }}>
                                 Ready to claim your{" "}
                                 <span className="gradient-text-static">CapsLink</span>?
                             </h2>
-                            <p style={{ fontSize: "0.95rem", color: "#9090ad", marginBottom: "36px", maxWidth: "400px", margin: "0 auto 36px", lineHeight: 1.6 }}>
-                                Join creators, developers, and entrepreneurs who use CapsLink
+                            <p style={{ fontSize: "0.95rem", color: "#6b6b8a", marginBottom: "36px", maxWidth: "400px", margin: "0 auto 36px", lineHeight: 1.6 }}>
+                                Join influencers, creators, and entrepreneurs who use CapsLink
                                 to share their world.
                             </p>
                             <Link href="/sign-up" className="btn-primary" style={{ padding: "16px 40px", fontSize: "1rem" }}>
@@ -316,7 +396,7 @@ export default function HomePage() {
             </section>
 
             {/* ===== FOOTER ===== */}
-            <footer style={{ borderTop: "1px solid rgba(28,28,48,0.6)", padding: "36px 24px" }}>
+            <footer style={{ borderTop: "1px solid rgba(255,255,255,0.4)", padding: "36px 24px" }}>
                 <div
                     style={{
                         maxWidth: "960px", margin: "0 auto",
@@ -328,17 +408,18 @@ export default function HomePage() {
                         <div
                             style={{
                                 width: "24px", height: "24px", borderRadius: "6px",
-                                background: "linear-gradient(135deg, #8b5cf6, #22d3ee)",
+                                background: "linear-gradient(135deg, #e84393, #fd79a8)",
                                 display: "flex", alignItems: "center", justifyContent: "center",
+                                boxShadow: "0 2px 8px rgba(232,67,147,0.25)",
                             }}
                         >
                             <Zap style={{ width: 12, height: 12, color: "white" }} />
                         </div>
-                        <span style={{ fontSize: "13px", color: "#505068" }}>
-                            ⚡ Powered by <span style={{ color: "#9090ad" }}>CAPSLOQUE</span>
+                        <span style={{ fontSize: "13px", color: "#9a9ab5" }}>
+                            ⚡ Powered by <span style={{ color: "#6b6b8a", fontWeight: 600 }}>CAPSLOQUE</span>
                         </span>
                     </div>
-                    <p style={{ fontSize: "13px", color: "#505068" }}>
+                    <p style={{ fontSize: "13px", color: "#9a9ab5" }}>
                         © {new Date().getFullYear()} CapsLink. All rights reserved.
                     </p>
                 </div>

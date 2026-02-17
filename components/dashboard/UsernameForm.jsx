@@ -65,25 +65,20 @@ export default function UsernameForm({ userId, onClaimed }) {
         setLoading(false);
     };
 
-    const statusColor = available === true
-        ? "#22c55e"
-        : available === false
-            ? "#ef4444"
-            : "transparent";
-
     return (
         <div style={{ width: "100%", maxWidth: "420px", margin: "0 auto" }}>
             <div
                 className="animate-fade-in"
                 style={{
-                    borderRadius: "24px",
-                    border: "1px solid rgba(45, 45, 74, 0.4)",
-                    background: "linear-gradient(160deg, rgba(14,14,24,0.95) 0%, rgba(20,20,34,0.7) 100%)",
+                    borderRadius: "28px",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    background: "rgba(255,255,255,0.25)",
                     backdropFilter: "blur(24px)",
                     padding: "40px 32px",
                     textAlign: "center",
                     position: "relative",
                     overflow: "hidden",
+                    boxShadow: "0 8px 32px rgba(232,67,147,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
                 }}
             >
                 {/* Subtle glow */}
@@ -91,7 +86,7 @@ export default function UsernameForm({ userId, onClaimed }) {
                     style={{
                         position: "absolute", top: "-40px", right: "-40px",
                         width: "180px", height: "180px",
-                        background: "radial-gradient(circle, rgba(139,92,246,0.1) 0%, transparent 70%)",
+                        background: "radial-gradient(circle, rgba(232,67,147,0.1) 0%, transparent 70%)",
                         filter: "blur(40px)", pointerEvents: "none",
                     }}
                 />
@@ -99,7 +94,7 @@ export default function UsernameForm({ userId, onClaimed }) {
                     style={{
                         position: "absolute", bottom: "-30px", left: "-30px",
                         width: "140px", height: "140px",
-                        background: "radial-gradient(circle, rgba(34,211,238,0.06) 0%, transparent 70%)",
+                        background: "radial-gradient(circle, rgba(162,155,254,0.08) 0%, transparent 70%)",
                         filter: "blur(30px)", pointerEvents: "none",
                     }}
                 />
@@ -108,25 +103,26 @@ export default function UsernameForm({ userId, onClaimed }) {
                     {/* Icon */}
                     <div
                         style={{
-                            width: "56px", height: "56px", borderRadius: "16px",
-                            background: "linear-gradient(135deg, rgba(139,92,246,0.2), rgba(34,211,238,0.1))",
+                            width: "56px", height: "56px", borderRadius: "18px",
+                            background: "linear-gradient(135deg, rgba(232,67,147,0.12), rgba(162,155,254,0.08))",
+                            border: "1px solid rgba(255,255,255,0.4)",
                             display: "flex", alignItems: "center", justifyContent: "center",
                             margin: "0 auto 24px",
                         }}
                     >
-                        <AtSign style={{ width: 26, height: 26, color: "#a78bfa" }} />
+                        <AtSign style={{ width: 26, height: 26, color: "#e84393" }} />
                     </div>
 
                     {/* Title */}
                     <h2
                         style={{
-                            fontSize: "1.5rem", fontWeight: 800, color: "#eeeef5",
+                            fontSize: "1.5rem", fontWeight: 800, color: "#1a1a2e",
                             marginBottom: "8px", letterSpacing: "-0.02em",
                         }}
                     >
                         Claim Your Username
                     </h2>
-                    <p style={{ fontSize: "0.875rem", color: "#9090ad", marginBottom: "32px", lineHeight: 1.5 }}>
+                    <p style={{ fontSize: "0.875rem", color: "#6b6b8a", marginBottom: "32px", lineHeight: 1.5 }}>
                         This will be your unique CapsLink URL
                     </p>
 
@@ -139,12 +135,12 @@ export default function UsernameForm({ userId, onClaimed }) {
                                 marginBottom: "12px", justifyContent: "center",
                             }}
                         >
-                            <span style={{ fontSize: "13px", color: "#505068" }}>capslink.com/</span>
-                            <span style={{ fontSize: "13px", color: "#c4b5fd", fontWeight: 600 }}>
+                            <span style={{ fontSize: "13px", color: "#9a9ab5" }}>capslink.com/</span>
+                            <span style={{ fontSize: "13px", color: "#e84393", fontWeight: 600 }}>
                                 {username || "yourname"}
                             </span>
                             {available === true && (
-                                <Check style={{ width: 14, height: 14, color: "#22c55e", marginLeft: "4px" }} />
+                                <Check style={{ width: 14, height: 14, color: "#00b894", marginLeft: "4px" }} />
                             )}
                         </div>
 
@@ -160,26 +156,27 @@ export default function UsernameForm({ userId, onClaimed }) {
                                 style={{
                                     width: "100%",
                                     padding: "14px 44px 14px 16px",
-                                    borderRadius: "12px",
-                                    border: `1px solid ${available === true ? "rgba(34,197,94,0.3)" : available === false ? "rgba(239,68,68,0.3)" : "rgba(45,45,74,0.5)"}`,
-                                    background: "rgba(6,6,11,0.8)",
-                                    color: "#eeeef5",
+                                    borderRadius: "14px",
+                                    border: `1px solid ${available === true ? "rgba(0,184,148,0.3)" : available === false ? "rgba(255,107,107,0.3)" : "rgba(255,255,255,0.5)"}`,
+                                    background: "rgba(255,255,255,0.4)",
+                                    color: "#1a1a2e",
                                     fontSize: "0.95rem",
                                     fontWeight: 500,
                                     outline: "none",
                                     transition: "border-color 0.2s ease, box-shadow 0.2s ease",
                                     boxSizing: "border-box",
+                                    backdropFilter: "blur(8px)",
                                 }}
                             />
                             <div style={{ position: "absolute", right: "14px", top: "50%", transform: "translateY(-50%)" }}>
                                 {checking && (
-                                    <Loader2 style={{ width: 16, height: 16, color: "#9090ad", animation: "spin 1s linear infinite" }} />
+                                    <Loader2 style={{ width: 16, height: 16, color: "#6b6b8a", animation: "spin 1s linear infinite" }} />
                                 )}
                                 {!checking && available === true && (
-                                    <Check style={{ width: 16, height: 16, color: "#22c55e" }} />
+                                    <Check style={{ width: 16, height: 16, color: "#00b894" }} />
                                 )}
                                 {!checking && available === false && (
-                                    <AlertCircle style={{ width: 16, height: 16, color: "#ef4444" }} />
+                                    <AlertCircle style={{ width: 16, height: 16, color: "#ff6b6b" }} />
                                 )}
                             </div>
                         </div>
@@ -189,7 +186,7 @@ export default function UsernameForm({ userId, onClaimed }) {
                             <div
                                 style={{
                                     display: "flex", alignItems: "center", gap: "6px",
-                                    fontSize: "13px", color: "#ef4444",
+                                    fontSize: "13px", color: "#ff6b6b",
                                     marginBottom: "16px", justifyContent: "center",
                                 }}
                             >
@@ -206,17 +203,17 @@ export default function UsernameForm({ userId, onClaimed }) {
                                 width: "100%",
                                 display: "flex", alignItems: "center", justifyContent: "center", gap: "8px",
                                 padding: "14px 24px",
-                                borderRadius: "12px",
+                                borderRadius: "14px",
                                 border: "none",
                                 background: available
-                                    ? "linear-gradient(135deg, #8b5cf6, #7c3aed)"
-                                    : "rgba(45,45,74,0.4)",
-                                color: available ? "white" : "#505068",
+                                    ? "linear-gradient(135deg, #e84393, #fd79a8)"
+                                    : "rgba(255,255,255,0.3)",
+                                color: available ? "white" : "#9a9ab5",
                                 fontSize: "0.9rem",
                                 fontWeight: 700,
                                 cursor: available ? "pointer" : "not-allowed",
                                 transition: "all 0.2s ease",
-                                boxShadow: available ? "0 4px 20px rgba(139,92,246,0.3)" : "none",
+                                boxShadow: available ? "0 4px 20px rgba(232,67,147,0.3)" : "none",
                             }}
                         >
                             {loading ? (
@@ -231,7 +228,7 @@ export default function UsernameForm({ userId, onClaimed }) {
                     </form>
 
                     {/* Hint */}
-                    <p style={{ fontSize: "12px", color: "#505068", marginTop: "16px" }}>
+                    <p style={{ fontSize: "12px", color: "#9a9ab5", marginTop: "16px" }}>
                         Only letters, numbers, hyphens, and underscores allowed
                     </p>
                 </div>

@@ -9,11 +9,15 @@ import {
     Copy,
     Check,
     Zap,
+    BarChart3,
+    Pencil,
 } from "lucide-react";
 import UsernameForm from "@/components/dashboard/UsernameForm";
 import ProfileEditor from "@/components/dashboard/ProfileEditor";
 import LinkManager from "@/components/dashboard/LinkManager";
 import MobilePreview from "@/components/dashboard/MobilePreview";
+import TemplateSelector from "@/components/dashboard/TemplateSelector";
+import AnalyticsDashboard from "@/components/dashboard/AnalyticsDashboard";
 
 export default function DashboardPage() {
     const { user, isLoaded } = useUser();
@@ -21,6 +25,7 @@ export default function DashboardPage() {
     const [links, setLinks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [copied, setCopied] = useState(false);
+    const [activeTab, setActiveTab] = useState("editor");
 
     useEffect(() => {
         if (isLoaded && user) {
@@ -61,6 +66,7 @@ export default function DashboardPage() {
             display_name: "",
             bio: "",
             avatar_url: "",
+            template: "glass",
         });
     };
 
@@ -75,7 +81,7 @@ export default function DashboardPage() {
     if (!isLoaded || loading) {
         return (
             <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                <Loader2 style={{ width: 32, height: 32, color: "#8b5cf6", animation: "spin 1s linear infinite" }} />
+                <Loader2 style={{ width: 32, height: 32, color: "#e84393", animation: "spin 1s linear infinite" }} />
             </div>
         );
     }
@@ -84,19 +90,20 @@ export default function DashboardPage() {
         return (
             <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
                 <div style={{
-                    maxWidth: "400px", borderRadius: "20px",
-                    border: "1px solid rgba(45,45,74,0.4)",
-                    background: "linear-gradient(160deg, rgba(14,14,24,0.95) 0%, rgba(20,20,34,0.7) 100%)",
+                    maxWidth: "400px", borderRadius: "24px",
+                    border: "1px solid rgba(255,255,255,0.5)",
+                    background: "rgba(255,255,255,0.25)",
                     backdropFilter: "blur(24px)", padding: "32px", textAlign: "center",
+                    boxShadow: "0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
                 }}>
-                    <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, rgba(245,158,11,0.2), rgba(234,88,12,0.1))", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
+                    <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, rgba(253,166,0,0.15), rgba(234,88,12,0.08))", border: "1px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
                         <Zap style={{ width: 28, height: 28, color: "#f59e0b" }} />
                     </div>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#eeeef5", marginBottom: "12px" }}>Setup Required</h2>
-                    <p style={{ fontSize: "0.875rem", color: "#9090ad", marginBottom: "16px", lineHeight: 1.5 }}>
+                    <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#1a1a2e", marginBottom: "12px" }}>Setup Required</h2>
+                    <p style={{ fontSize: "0.875rem", color: "#6b6b8a", marginBottom: "16px", lineHeight: 1.5 }}>
                         Supabase credentials are not configured yet.
                     </p>
-                    <p style={{ fontSize: "0.75rem", color: "#505068" }}>Then restart the dev server.</p>
+                    <p style={{ fontSize: "0.75rem", color: "#9a9ab5" }}>Then restart the dev server.</p>
                 </div>
             </div>
         );
@@ -118,10 +125,10 @@ export default function DashboardPage() {
                 <div className="animate-fade-in" style={{ marginBottom: "32px" }}>
                     <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "16px" }}>
                         <div>
-                            <h1 style={{ fontSize: "1.75rem", fontWeight: 800, letterSpacing: "-0.02em", color: "#eeeef5" }}>
+                            <h1 style={{ fontSize: "1.75rem", fontWeight: 800, letterSpacing: "-0.02em", color: "#1a1a2e" }}>
                                 Your <span className="gradient-text">Dashboard</span>
                             </h1>
-                            <p style={{ fontSize: "0.875rem", color: "#9090ad", marginTop: "4px" }}>
+                            <p style={{ fontSize: "0.875rem", color: "#6b6b8a", marginTop: "4px" }}>
                                 Manage your CapsLink profile and links
                             </p>
                         </div>
@@ -131,15 +138,17 @@ export default function DashboardPage() {
                                 title="Copy profile URL"
                                 style={{
                                     display: "inline-flex", alignItems: "center", gap: "6px",
-                                    padding: "8px 14px", borderRadius: "10px",
-                                    border: "1px solid rgba(45,45,74,0.5)",
-                                    background: "rgba(20,20,34,0.6)",
-                                    color: "#c0c0d0", fontSize: "13px", fontWeight: 600,
+                                    padding: "8px 14px", borderRadius: "12px",
+                                    border: "1px solid rgba(255,255,255,0.5)",
+                                    background: "rgba(255,255,255,0.3)",
+                                    backdropFilter: "blur(8px)",
+                                    color: "#4a4a6a", fontSize: "13px", fontWeight: 600,
                                     cursor: "pointer", transition: "all 0.2s ease",
+                                    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.4)",
                                 }}
                             >
                                 {copied ? (
-                                    <Check style={{ width: 14, height: 14, color: "#22c55e" }} />
+                                    <Check style={{ width: 14, height: 14, color: "#00b894" }} />
                                 ) : (
                                     <Copy style={{ width: 14, height: 14 }} />
                                 )}
@@ -151,11 +160,11 @@ export default function DashboardPage() {
                                 rel="noopener noreferrer"
                                 style={{
                                     display: "inline-flex", alignItems: "center", gap: "6px",
-                                    padding: "8px 14px", borderRadius: "10px",
-                                    background: "linear-gradient(135deg, #8b5cf6, #7c3aed)",
+                                    padding: "8px 14px", borderRadius: "12px",
+                                    background: "linear-gradient(135deg, #e84393, #fd79a8)",
                                     color: "white", fontSize: "13px", fontWeight: 600,
                                     textDecoration: "none", transition: "all 0.2s ease",
-                                    boxShadow: "0 2px 12px rgba(139,92,246,0.3)",
+                                    boxShadow: "0 2px 12px rgba(232,67,147,0.3)",
                                 }}
                             >
                                 <ExternalLink style={{ width: 14, height: 14 }} />
@@ -163,29 +172,79 @@ export default function DashboardPage() {
                             </a>
                         </div>
                     </div>
+
+                    {/* Tabs */}
+                    <div style={{
+                        display: "flex", gap: "4px", marginTop: "24px",
+                        padding: "4px", borderRadius: "14px",
+                        background: "rgba(255,255,255,0.2)",
+                        border: "1px solid rgba(255,255,255,0.4)",
+                        backdropFilter: "blur(8px)",
+                        width: "fit-content",
+                    }}>
+                        {[
+                            { id: "editor", label: "Editor", icon: Pencil },
+                            { id: "analytics", label: "Analytics", icon: BarChart3 },
+                        ].map((tab) => {
+                            const isActive = activeTab === tab.id;
+                            const Icon = tab.icon;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    style={{
+                                        display: "inline-flex", alignItems: "center", gap: "6px",
+                                        padding: "8px 18px", borderRadius: "10px",
+                                        border: "none",
+                                        background: isActive
+                                            ? "linear-gradient(135deg, #e84393, #fd79a8)"
+                                            : "transparent",
+                                        color: isActive ? "white" : "#6b6b8a",
+                                        fontSize: "13px", fontWeight: 600,
+                                        cursor: "pointer", transition: "all 0.25s ease",
+                                        boxShadow: isActive ? "0 2px 12px rgba(232,67,147,0.3)" : "none",
+                                    }}
+                                >
+                                    <Icon style={{ width: 14, height: 14 }} />
+                                    {tab.label}
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
 
-                {/* Two-column layout */}
-                <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
-                    {/* Left — Editor */}
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ marginBottom: "24px" }}>
-                            <ProfileEditor profile={profile} onUpdate={setProfile} />
+                {/* Tab Content */}
+                {activeTab === "editor" ? (
+                    /* Two-column layout — Editor */
+                    <div style={{ display: "flex", gap: "40px", alignItems: "flex-start" }}>
+                        {/* Left — Editor */}
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ marginBottom: "24px" }}>
+                                <ProfileEditor profile={profile} onUpdate={setProfile} />
+                            </div>
+                            <div style={{ marginBottom: "24px" }}>
+                                <TemplateSelector profile={profile} onUpdate={setProfile} />
+                            </div>
+                            <div style={{ marginBottom: "32px" }}>
+                                <LinkManager links={links} userId={user.id} onLinksChange={setLinks} />
+                            </div>
+                            <div style={{ textAlign: "center", fontSize: "12px", color: "#9a9ab5", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+                                <Zap style={{ width: 12, height: 12 }} />
+                                Powered by CAPSLOQUE
+                            </div>
                         </div>
-                        <div style={{ marginBottom: "32px" }}>
-                            <LinkManager links={links} userId={user.id} onLinksChange={setLinks} />
-                        </div>
-                        <div style={{ textAlign: "center", fontSize: "12px", color: "#505068", display: "flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-                            <Zap style={{ width: 12, height: 12 }} />
-                            Powered by CAPSLOQUE
-                        </div>
-                    </div>
 
-                    {/* Right — Mobile Preview (hidden on small screens via CSS) */}
-                    <div className="hide-mobile" style={{ flexShrink: 0, alignSelf: "flex-start", position: "sticky", top: "100px" }}>
-                        <MobilePreview profile={profile} links={links} />
+                        {/* Right — Mobile Preview (hidden on small screens via CSS) */}
+                        <div className="hide-mobile" style={{ flexShrink: 0, alignSelf: "flex-start", position: "sticky", top: "100px" }}>
+                            <MobilePreview profile={profile} links={links} />
+                        </div>
                     </div>
-                </div>
+                ) : (
+                    /* Full-width Analytics */
+                    <div className="animate-fade-in">
+                        <AnalyticsDashboard links={links} userId={user.id} />
+                    </div>
+                )}
             </div>
         </div>
     );
