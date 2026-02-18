@@ -69,10 +69,7 @@ export default function Navbar() {
                             letterSpacing: "-0.02em",
                         }}
                     >
-                        Caps
-                        <span className="gradient-text" style={{ fontWeight: 800 }}>
-                            Link
-                        </span>
+                        qloque
                     </span>
                 </Link>
 

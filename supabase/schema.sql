@@ -1,5 +1,5 @@
 -- ============================================
--- CapsLink Database Schema
+-- qloque Database Schema
 -- Run this in the Supabase SQL Editor
 -- ============================================
 

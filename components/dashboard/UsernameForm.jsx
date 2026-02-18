@@ -123,7 +123,7 @@ export default function UsernameForm({ userId, onClaimed }) {
                         Claim Your Username
                     </h2>
                     <p style={{ fontSize: "0.875rem", color: "#6b6b8a", marginBottom: "32px", lineHeight: 1.5 }}>
-                        This will be your unique CapsLink URL
+                        This will be your unique qloque URL
                     </p>
 
                     {/* Form */}
@@ -135,7 +135,7 @@ export default function UsernameForm({ userId, onClaimed }) {
                                 marginBottom: "12px", justifyContent: "center",
                             }}
                         >
-                            <span style={{ fontSize: "13px", color: "#9a9ab5" }}>capslink.com/</span>
+                            <span style={{ fontSize: "13px", color: "#9a9ab5" }}>qloque.com/</span>
                             <span style={{ fontSize: "13px", color: "#e84393", fontWeight: 600 }}>
                                 {username || "yourname"}
                             </span>

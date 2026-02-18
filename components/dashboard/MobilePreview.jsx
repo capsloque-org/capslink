@@ -216,7 +216,7 @@ export default function MobilePreview({ profile, links = [] }) {
                                 ...s.footer,
                             }}>
                                 <Zap style={{ width: 8, height: 8 }} />
-                                Powered by CapsLink
+                                Powered by qloque
                             </div>
                         </div>
                     </div>

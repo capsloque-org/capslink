@@ -35,10 +35,13 @@ const nunito = Nunito({
 });
 
 export const metadata = {
-  title: "CapsLink — Your Link-in-Bio by CAPSLOQUE",
+  title: "qloque — Your Link-in-Bio by CAPSLOQUE",
   description:
-    "Create a stunning link-in-bio page with CapsLink. Share all your links in one beautiful, mobile-optimized page. Powered by CAPSLOQUE.",
-  keywords: ["link in bio", "linktree alternative", "capslink", "capsloque"],
+    "Create a stunning link-in-bio page with qloque. Share all your links in one beautiful, mobile-optimized page. Powered by CAPSLOQUE.",
+  keywords: ["link in bio", "linktree alternative", "qloque", "capsloque"],
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({ children }) {

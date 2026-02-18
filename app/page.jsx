@@ -380,10 +380,10 @@ export default function HomePage() {
                             </div>
                             <h2 style={{ fontSize: "clamp(1.5rem, 3.5vw, 2.25rem)", fontWeight: 700, marginBottom: "14px", letterSpacing: "-0.02em", color: "#1a1a2e" }}>
                                 Ready to claim your{" "}
-                                <span className="gradient-text-static">CapsLink</span>?
+                                <span className="gradient-text-static">qloque</span>?
                             </h2>
                             <p style={{ fontSize: "0.95rem", color: "#6b6b8a", marginBottom: "36px", maxWidth: "400px", margin: "0 auto 36px", lineHeight: 1.6 }}>
-                                Join influencers, creators, and entrepreneurs who use CapsLink
+                                Join influencers, creators, and entrepreneurs who use qloque
                                 to share their world.
                             </p>
                             <Link href="/sign-up" className="btn-primary" style={{ padding: "16px 40px", fontSize: "1rem" }}>
@@ -420,7 +420,7 @@ export default function HomePage() {
                         </span>
                     </div>
                     <p style={{ fontSize: "13px", color: "#9a9ab5" }}>
-                        © {new Date().getFullYear()} CapsLink. All rights reserved.
+                        © {new Date().getFullYear()} qloque. All rights reserved.
                     </p>
                 </div>
             </footer>

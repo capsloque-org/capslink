@@ -7,7 +7,7 @@ import ClickableLink from "@/components/ClickableLink";
 
 // Dynamic metadata for SEO
 export async function generateMetadata({ params }) {
-    if (!supabase) return { title: "CapsLink — Setup Required" };
+    if (!supabase) return { title: "qloque — Setup Required" };
 
     const { username } = await params;
     const { data: profile } = await supabase
@@ -17,18 +17,18 @@ export async function generateMetadata({ params }) {
         .single();
 
     if (!profile) {
-        return { title: "Profile Not Found — CapsLink" };
+        return { title: "Profile Not Found — qloque" };
     }
 
     const name = profile.display_name || profile.username;
     return {
-        title: `${name} — CapsLink`,
+        title: `${name} — qloque`,
         description:
-            profile.bio || `Check out ${name}'s links on CapsLink by CAPSLOQUE.`,
+            profile.bio || `Check out ${name}'s links on qloque by CAPSLOQUE.`,
         openGraph: {
-            title: `${name} — CapsLink`,
+            title: `${name} — qloque`,
             description:
-                profile.bio || `Check out ${name}'s links on CapsLink by CAPSLOQUE.`,
+                profile.bio || `Check out ${name}'s links on qloque by CAPSLOQUE.`,
         },
     };
 }
@@ -221,7 +221,7 @@ export default async function ProfilePage({ params }) {
                         }}
                     >
                         <Zap style={{ width: 12, height: 12 }} />
-                        Powered by CapsLink
+                        Powered by qloque
                     </a>
                 </div>
             </div>

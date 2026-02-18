@@ -129,7 +129,7 @@ export default function DashboardPage() {
                                 Your <span className="gradient-text">Dashboard</span>
                             </h1>
                             <p style={{ fontSize: "0.875rem", color: "#6b6b8a", marginTop: "4px" }}>
-                                Manage your CapsLink profile and links
+                                Manage your qloque profile and links
                             </p>
                         </div>
                         <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>

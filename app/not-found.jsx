@@ -10,7 +10,7 @@ export default function NotFound() {
                     Profile Not Found
                 </h2>
                 <p className="text-sm mb-8 max-w-sm mx-auto" style={{ color: "#6b6b8a" }}>
-                    This CapsLink profile doesn&apos;t exist yet. Want to claim it?
+                    This qloque profile doesn&apos;t exist yet. Want to claim it?
                 </p>
                 <div className="flex items-center justify-center gap-3">
                     <Link href="/" className="btn-outline text-sm py-2 px-4">
