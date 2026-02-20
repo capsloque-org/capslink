@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { supabase } from "@/lib/supabase";
 import { SOCIAL_PLATFORMS, detectPlatform, PlatformIcon } from "@/lib/socialPlatforms";
 import {
     Plus, Trash2, ChevronUp, ChevronDown, ExternalLink,
     Pencil, X, Check, Loader2, Link2, ChevronDown as SelectArrow, BarChart3, CircleDot,
+    Search,
 } from "lucide-react";
 
 export default function LinkManager({ links: initialLinks, userId, onLinksChange }) {
@@ -19,6 +20,9 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
     const [editUrl, setEditUrl] = useState("");
     const [showAddForm, setShowAddForm] = useState(false);
     const [clickCounts, setClickCounts] = useState({});
+    const [dropdownOpen, setDropdownOpen] = useState(false);
+    const [platformSearch, setPlatformSearch] = useState("");
+    const dropdownRef = useRef(null);
 
     // Fetch click counts
     useEffect(() => {
@@ -28,18 +32,31 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                 .then((data) => {
                     if (data.clicks) setClickCounts(data.clicks);
                 })
-                .catch(() => {});
+                .catch(() => { });
         }
     }, [userId, links]);
+
+    // Close dropdown on outside click
+    useEffect(() => {
+        const handleClickOutside = (e) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+                setDropdownOpen(false);
+                setPlatformSearch("");
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
     const updateLinks = (newLinks) => {
         setLinks(newLinks);
         onLinksChange?.(newLinks);
     };
 
-    const handlePlatformSelect = (e) => {
-        const platformId = e.target.value;
+    const handlePlatformSelect = (platformId) => {
         setSelectedPlatform(platformId);
+        setDropdownOpen(false);
+        setPlatformSearch("");
         if (platformId && platformId !== "website") {
             const platform = SOCIAL_PLATFORMS.find((p) => p.id === platformId);
             if (platform) {
@@ -121,6 +138,12 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
         }
     };
 
+    const filteredPlatforms = SOCIAL_PLATFORMS.filter((p) =>
+        p.name.toLowerCase().includes(platformSearch.toLowerCase())
+    );
+
+    const selectedPlatformData = SOCIAL_PLATFORMS.find((p) => p.id === selectedPlatform);
+
     const cardStyle = {
         borderRadius: "24px",
         border: "1px solid rgba(255,255,255,0.5)",
@@ -136,16 +159,6 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
         color: "#1a1a2e", fontSize: "0.85rem", outline: "none",
         transition: "border-color 0.2s ease", boxSizing: "border-box",
         backdropFilter: "blur(8px)",
-    };
-
-    const selectStyle = {
-        ...inputStyle,
-        appearance: "none",
-        backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b6b8a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")`,
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "right 12px center",
-        paddingRight: "36px",
-        cursor: "pointer",
     };
 
     const smallBtnStyle = {
@@ -190,41 +203,166 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
                         background: "rgba(255,255,255,0.2)", border: "1px solid rgba(255,255,255,0.4)",
                         backdropFilter: "blur(12px)",
                         display: "flex", flexDirection: "column", gap: "10px",
+                        overflow: "visible", position: "relative", zIndex: 10,
                     }}
                 >
-                    {/* Platform Dropdown */}
-                    <div>
+                    {/* Custom Platform Dropdown */}
+                    <div ref={dropdownRef} style={{ position: "relative" }}>
                         <label style={{ fontSize: "12px", color: "#6b6b8a", marginBottom: "6px", display: "block", fontWeight: 500 }}>
                             Platform
                         </label>
-                        <select
-                            value={selectedPlatform}
-                            onChange={handlePlatformSelect}
-                            style={selectStyle}
+                        <button
+                            type="button"
+                            onClick={() => { setDropdownOpen(!dropdownOpen); setPlatformSearch(""); }}
+                            style={{
+                                width: "100%", padding: "10px 14px", borderRadius: "10px",
+                                border: dropdownOpen ? "1px solid rgba(232,67,147,0.4)" : "1px solid rgba(255,255,255,0.5)",
+                                background: dropdownOpen ? "rgba(255,255,255,0.6)" : "rgba(255,255,255,0.4)",
+                                color: "#1a1a2e", fontSize: "0.85rem", outline: "none",
+                                transition: "all 0.2s ease", boxSizing: "border-box",
+                                backdropFilter: "blur(8px)",
+                                cursor: "pointer",
+                                display: "flex", alignItems: "center", gap: "10px",
+                                textAlign: "left",
+                                boxShadow: dropdownOpen ? "0 0 0 3px rgba(232,67,147,0.08)" : "none",
+                            }}
                         >
-                            <option value="">Select a platform...</option>
-                            {SOCIAL_PLATFORMS.map((p) => (
-                                <option key={p.id} value={p.id}>{p.name}</option>
-                            ))}
-                        </select>
+                            {selectedPlatformData ? (
+                                <>
+                                    <div style={{
+                                        width: "24px", height: "24px", borderRadius: "6px",
+                                        background: selectedPlatformData.gradient,
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        flexShrink: 0,
+                                    }}>
+                                        <PlatformIcon platformId={selectedPlatformData.id} size={12} />
+                                    </div>
+                                    <span style={{ flex: 1, fontWeight: 500 }}>{selectedPlatformData.name}</span>
+                                </>
+                            ) : (
+                                <>
+                                    <div style={{
+                                        width: "24px", height: "24px", borderRadius: "6px",
+                                        background: "rgba(154,154,181,0.15)",
+                                        display: "flex", alignItems: "center", justifyContent: "center",
+                                        flexShrink: 0,
+                                    }}>
+                                        <Link2 style={{ width: 12, height: 12, color: "#9a9ab5" }} />
+                                    </div>
+                                    <span style={{ flex: 1, color: "#9a9ab5" }}>Select a platform...</span>
+                                </>
+                            )}
+                            <ChevronDown style={{
+                                width: 14, height: 14, color: "#9a9ab5", flexShrink: 0,
+                                transition: "transform 0.2s ease",
+                                transform: dropdownOpen ? "rotate(180deg)" : "rotate(0deg)",
+                            }} />
+                        </button>
+
+                        {/* Dropdown Panel */}
+                        {dropdownOpen && (
+                            <div style={{
+                                position: "absolute", top: "calc(100% + 6px)", left: 0, right: 0,
+                                zIndex: 50,
+                                background: "rgba(255,255,255,0.92)",
+                                backdropFilter: "blur(24px)",
+                                WebkitBackdropFilter: "blur(24px)",
+                                borderRadius: "14px",
+                                border: "1px solid rgba(255,255,255,0.6)",
+                                boxShadow: "0 12px 48px rgba(26,26,46,0.12), 0 4px 16px rgba(232,67,147,0.06)",
+                                overflow: "hidden",
+                                animation: "fadeInDropdown 0.18s ease",
+                            }}>
+                                {/* Search */}
+                                <div style={{
+                                    padding: "10px 12px",
+                                    borderBottom: "1px solid rgba(232,67,147,0.08)",
+                                }}>
+                                    <div style={{
+                                        display: "flex", alignItems: "center", gap: "8px",
+                                        padding: "8px 10px", borderRadius: "8px",
+                                        background: "rgba(245,243,250,0.8)",
+                                        border: "1px solid rgba(232,67,147,0.1)",
+                                    }}>
+                                        <Search style={{ width: 13, height: 13, color: "#9a9ab5", flexShrink: 0 }} />
+                                        <input
+                                            type="text"
+                                            placeholder="Search platforms..."
+                                            value={platformSearch}
+                                            onChange={(e) => setPlatformSearch(e.target.value)}
+                                            autoFocus
+                                            style={{
+                                                border: "none", outline: "none", background: "transparent",
+                                                fontSize: "0.8rem", color: "#1a1a2e", width: "100%",
+                                            }}
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* Platform List */}
+                                <div style={{
+                                    maxHeight: "240px", overflowY: "auto",
+                                    padding: "6px",
+                                }}>
+                                    {filteredPlatforms.length === 0 ? (
+                                        <div style={{
+                                            padding: "16px", textAlign: "center",
+                                            color: "#9a9ab5", fontSize: "0.8rem",
+                                        }}>
+                                            No platforms found
+                                        </div>
+                                    ) : (
+                                        filteredPlatforms.map((p) => (
+                                            <button
+                                                key={p.id}
+                                                type="button"
+                                                onClick={() => handlePlatformSelect(p.id)}
+                                                style={{
+                                                    width: "100%", display: "flex", alignItems: "center", gap: "10px",
+                                                    padding: "8px 10px", borderRadius: "8px",
+                                                    border: "none", cursor: "pointer",
+                                                    background: selectedPlatform === p.id
+                                                        ? "rgba(232,67,147,0.1)"
+                                                        : "transparent",
+                                                    transition: "background 0.15s ease",
+                                                    textAlign: "left",
+                                                }}
+                                                onMouseEnter={(e) => {
+                                                    if (selectedPlatform !== p.id) e.currentTarget.style.background = "rgba(245,243,250,0.9)";
+                                                }}
+                                                onMouseLeave={(e) => {
+                                                    e.currentTarget.style.background = selectedPlatform === p.id
+                                                        ? "rgba(232,67,147,0.1)" : "transparent";
+                                                }}
+                                            >
+                                                <div style={{
+                                                    width: "28px", height: "28px", borderRadius: "8px",
+                                                    background: p.gradient,
+                                                    display: "flex", alignItems: "center", justifyContent: "center",
+                                                    flexShrink: 0,
+                                                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+                                                }}>
+                                                    <PlatformIcon platformId={p.id} size={13} />
+                                                </div>
+                                                <span style={{
+                                                    flex: 1, fontSize: "0.82rem", fontWeight: 500,
+                                                    color: selectedPlatform === p.id ? "#e84393" : "#1a1a2e",
+                                                }}>
+                                                    {p.name}
+                                                </span>
+                                                {selectedPlatform === p.id && (
+                                                    <Check style={{ width: 14, height: 14, color: "#e84393" }} />
+                                                )}
+                                            </button>
+                                        ))
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Selected platform preview */}
-                    {selectedPlatform && selectedPlatform !== "website" && (
-                        <div style={{
-                            display: "flex", alignItems: "center", gap: "8px",
-                            padding: "8px 12px", borderRadius: "10px",
-                            background: "rgba(232,67,147,0.08)", border: "1px solid rgba(232,67,147,0.15)",
-                        }}>
-                            <PlatformIcon platformId={selectedPlatform} size={16} />
-                            <span style={{ fontSize: "12px", color: "#e84393", fontWeight: 500 }}>
-                                {SOCIAL_PLATFORMS.find(p => p.id === selectedPlatform)?.name}
-                            </span>
-                        </div>
-                    )}
-
                     <input type="text" value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Link title" style={inputStyle} />
-                    <input type="text" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="URL (e.g., https://instagram.com/you)" style={inputStyle} autoFocus />
+                    <input type="text" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} placeholder="URL (e.g., https://instagram.com/you)" style={inputStyle} />
                     <button
                         type="submit"
                         disabled={adding || !newTitle.trim() || !newUrl.trim()}

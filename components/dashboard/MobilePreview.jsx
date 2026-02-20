@@ -181,7 +181,10 @@ export default function MobilePreview({ profile, links = [] }) {
                                                     display: "flex", alignItems: "center", gap: "10px",
                                                     padding: "10px 12px",
                                                     transition: "all 0.2s ease",
-                                                    animation: `${animName} 0.4s ease both`,
+                                                    animationName: animName,
+                                                    animationDuration: "0.4s",
+                                                    animationTimingFunction: "ease",
+                                                    animationFillMode: "both",
                                                     animationDelay: `${i * 0.05}s`,
                                                     ...s.linkCard,
                                                 }}
