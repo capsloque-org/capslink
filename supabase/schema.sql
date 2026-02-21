@@ -26,10 +26,19 @@ CREATE TABLE IF NOT EXISTS links (
   created_at TIMESTAMPTZ DEFAULT now()
 );
 
+-- Click events table (for date-filtered analytics)
+CREATE TABLE IF NOT EXISTS click_events (
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+  link_id UUID NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+  clicked_at TIMESTAMPTZ DEFAULT now()
+);
+
 -- Create indexes
 CREATE INDEX IF NOT EXISTS idx_profiles_username ON profiles(username);
 CREATE INDEX IF NOT EXISTS idx_links_user_id ON links(user_id);
 CREATE INDEX IF NOT EXISTS idx_links_order ON links(user_id, order_index);
+CREATE INDEX IF NOT EXISTS idx_click_events_link_id ON click_events(link_id);
+CREATE INDEX IF NOT EXISTS idx_click_events_clicked_at ON click_events(clicked_at);
 
 -- ============================================
 -- Row Level Security
@@ -73,6 +82,17 @@ CREATE POLICY "Users can delete own links"
   ON links FOR DELETE
   USING (true);
 
+-- Click events: anyone can insert (visitors), anyone can read (API filters by user)
+ALTER TABLE click_events ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Anyone can view click_events"
+  ON click_events FOR SELECT
+  USING (true);
+
+CREATE POLICY "Anyone can insert click_events"
+  ON click_events FOR INSERT
+  WITH CHECK (true);
+
 -- ============================================
 -- Migration: Add banner_url and clicks columns
 -- Run these if upgrading an existing database
@@ -80,3 +100,15 @@ CREATE POLICY "Users can delete own links"
 -- ALTER TABLE profiles ADD COLUMN IF NOT EXISTS banner_url TEXT DEFAULT '';
 -- ALTER TABLE links ADD COLUMN IF NOT EXISTS clicks INTEGER DEFAULT 0;
 -- ALTER TABLE links ADD COLUMN IF NOT EXISTS show_icon BOOLEAN DEFAULT false;
+
+-- Migration: Add click_events table
+-- CREATE TABLE IF NOT EXISTS click_events (
+--   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+--   link_id UUID NOT NULL REFERENCES links(id) ON DELETE CASCADE,
+--   clicked_at TIMESTAMPTZ DEFAULT now()
+-- );
+-- CREATE INDEX IF NOT EXISTS idx_click_events_link_id ON click_events(link_id);
+-- CREATE INDEX IF NOT EXISTS idx_click_events_clicked_at ON click_events(clicked_at);
+-- ALTER TABLE click_events ENABLE ROW LEVEL SECURITY;
+-- CREATE POLICY "Anyone can view click_events" ON click_events FOR SELECT USING (true);
+-- CREATE POLICY "Anyone can insert click_events" ON click_events FOR INSERT WITH CHECK (true);

@@ -1,33 +1,92 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { detectPlatform, PlatformIcon } from "@/lib/socialPlatforms";
 import {
     BarChart3, TrendingUp, MousePointerClick, Eye,
-    ArrowUpRight, ArrowDownRight, Minus, Trophy, Loader2,
+    Trophy, Loader2, Calendar,
 } from "lucide-react";
+import ThemedDatePicker from "./ThemedDatePicker";
+
+const DATE_PRESETS = [
+    { key: "all", label: "All Time" },
+    { key: "today", label: "Today" },
+    { key: "7d", label: "7 Days" },
+    { key: "30d", label: "30 Days" },
+    { key: "custom", label: "Custom" },
+];
+
+function getDateRange(presetKey) {
+    if (presetKey === "all") return {};
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+
+    if (presetKey === "today") {
+        return { from: todayStr, to: todayStr };
+    }
+    if (presetKey === "7d") {
+        const d = new Date(now);
+        d.setDate(d.getDate() - 6);
+        return { from: d.toISOString().slice(0, 10), to: todayStr };
+    }
+    if (presetKey === "30d") {
+        const d = new Date(now);
+        d.setDate(d.getDate() - 29);
+        return { from: d.toISOString().slice(0, 10), to: todayStr };
+    }
+    return {};
+}
 
 export default function AnalyticsDashboard({ links = [], userId }) {
     const [clickCounts, setClickCounts] = useState({});
     const [loading, setLoading] = useState(true);
+    const [activePreset, setActivePreset] = useState("all");
+    const [customFrom, setCustomFrom] = useState("");
+    const [customTo, setCustomTo] = useState("");
 
-    useEffect(() => {
+    const fetchClicks = useCallback((dateParams = {}) => {
         if (!userId) return;
         setLoading(true);
-        fetch(`/api/clicks?userId=${userId}`)
+
+        let url = `/api/clicks?userId=${userId}`;
+        if (dateParams.from) url += `&from=${dateParams.from}`;
+        if (dateParams.to) url += `&to=${dateParams.to}`;
+
+        fetch(url)
             .then((res) => res.json())
             .then((data) => {
                 if (data.clicks) setClickCounts(data.clicks);
+                else setClickCounts({});
             })
-            .catch(() => {})
+            .catch(() => { })
             .finally(() => setLoading(false));
-    }, [userId, links]);
+    }, [userId]);
+
+    // Initial fetch and refetch when links change
+    useEffect(() => {
+        if (activePreset === "custom") {
+            if (customFrom && customTo) {
+                fetchClicks({ from: customFrom, to: customTo });
+            } else {
+                fetchClicks();
+            }
+        } else {
+            fetchClicks(getDateRange(activePreset));
+        }
+    }, [userId, links, activePreset, customFrom, customTo, fetchClicks]);
+
+    const handlePresetClick = (key) => {
+        setActivePreset(key);
+        if (key !== "custom") {
+            setCustomFrom("");
+            setCustomTo("");
+        }
+    };
 
     const analytics = useMemo(() => {
         const totalClicks = Object.values(clickCounts).reduce((sum, c) => sum + c, 0);
         const totalLinks = links.length;
 
-        // Build sorted list
         const linkStats = links
             .map((link) => ({
                 ...link,
@@ -38,8 +97,6 @@ export default function AnalyticsDashboard({ links = [], userId }) {
 
         const topLink = linkStats[0] || null;
         const avgClicks = totalLinks > 0 ? Math.round(totalClicks / totalLinks) : 0;
-
-        // Max clicks for bar width calculation
         const maxClicks = linkStats.length > 0 ? Math.max(...linkStats.map((l) => l.clicks), 1) : 1;
 
         return { totalClicks, totalLinks, linkStats, topLink, avgClicks, maxClicks };
@@ -64,7 +121,35 @@ export default function AnalyticsDashboard({ links = [], userId }) {
         minWidth: "0",
     };
 
-    if (loading) {
+    const presetBtnBase = {
+        padding: "6px 14px",
+        borderRadius: "20px",
+        fontSize: "0.72rem",
+        fontWeight: 600,
+        cursor: "pointer",
+        transition: "all 0.2s ease",
+        border: "1px solid rgba(232,67,147,0.15)",
+        outline: "none",
+        whiteSpace: "nowrap",
+    };
+
+    const presetBtnActive = {
+        ...presetBtnBase,
+        background: "linear-gradient(135deg, #e84393, #fd79a8)",
+        color: "#fff",
+        border: "1px solid transparent",
+        boxShadow: "0 2px 8px rgba(232,67,147,0.25)",
+    };
+
+    const presetBtnInactive = {
+        ...presetBtnBase,
+        background: "rgba(255,255,255,0.35)",
+        color: "#6b6b8d",
+    };
+
+
+
+    if (loading && Object.keys(clickCounts).length === 0) {
         return (
             <div className="animate-fade-in" style={cardStyle}>
                 <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
@@ -80,12 +165,60 @@ export default function AnalyticsDashboard({ links = [], userId }) {
 
     return (
         <div className="animate-fade-in" style={cardStyle}>
-            {/* Header */}
-            <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "24px" }}>
-                <BarChart3 style={{ width: 18, height: 18, color: "#e84393" }} />
-                <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a2e" }}>
-                    Analytics
-                </h3>
+            {/* Header + Date Filters (single row) */}
+            <div style={{ marginBottom: "20px" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                        <BarChart3 style={{ width: 18, height: 18, color: "#e84393" }} />
+                        <h3 style={{ fontSize: "1.05rem", fontWeight: 700, color: "#1a1a2e", margin: 0 }}>
+                            Analytics
+                        </h3>
+                        {loading && (
+                            <Loader2 style={{ width: 14, height: 14, color: "#e84393", animation: "spin 1s linear infinite" }} />
+                        )}
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: "5px", flexWrap: "wrap" }}>
+                        {DATE_PRESETS.map((preset) => (
+                            <button
+                                key={preset.key}
+                                onClick={() => handlePresetClick(preset.key)}
+                                style={activePreset === preset.key ? presetBtnActive : presetBtnInactive}
+                            >
+                                {preset.label}
+                            </button>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Custom date inputs */}
+                {activePreset === "custom" && (
+                    <div style={{
+                        display: "flex", alignItems: "center", gap: "8px",
+                        marginTop: "12px",
+                        padding: "10px 14px",
+                        borderRadius: "14px",
+                        background: "rgba(255,255,255,0.2)",
+                        border: "1px solid rgba(232,67,147,0.1)",
+                        backdropFilter: "blur(8px)",
+                        flexWrap: "nowrap",
+                    }}>
+                        <span style={{ fontSize: "0.72rem", color: "#9a9ab5", fontWeight: 600, flexShrink: 0 }}>From</span>
+                        <ThemedDatePicker
+                            value={customFrom}
+                            onChange={setCustomFrom}
+                            max={customTo || new Date().toISOString().slice(0, 10)}
+                            placeholder="Start"
+                        />
+                        <span style={{ fontSize: "0.72rem", color: "#9a9ab5", fontWeight: 600, flexShrink: 0 }}>To</span>
+                        <ThemedDatePicker
+                            value={customTo}
+                            onChange={setCustomTo}
+                            min={customFrom}
+                            max={new Date().toISOString().slice(0, 10)}
+                            placeholder="End"
+                        />
+                    </div>
+                )}
             </div>
 
             {/* Stat Cards Row */}
