@@ -370,6 +370,7 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
 }
 
 @keyframes blob-move {
+
   0%,
   100% {
     transform: translate(0, 0) scale(1);
@@ -408,6 +409,7 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
     opacity: 0;
     transform: translateY(-6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -425,6 +427,254 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
 
 .animate-blob {
   animation: blob-move 12s ease-in-out infinite;
+}
+
+/* ============ Premium Hero Styles ============ */
+
+/* Orbiting particles */
+@keyframes hero-orbit {
+  from {
+    transform: rotate(0deg) translateX(var(--orbit-radius, 160px)) rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg) translateX(var(--orbit-radius, 160px)) rotate(-360deg);
+  }
+}
+
+@keyframes hero-orbit-reverse {
+  from {
+    transform: rotate(360deg) translateX(var(--orbit-radius, 120px)) rotate(-360deg);
+  }
+
+  to {
+    transform: rotate(0deg) translateX(var(--orbit-radius, 120px)) rotate(0deg);
+  }
+}
+
+.hero-orbit-particle {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Pulsating glow behind CTA */
+@keyframes cta-pulse {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+.cta-glow-ring {
+  position: absolute;
+  inset: -8px;
+  border-radius: 20px;
+  background: linear-gradient(135deg, rgba(232, 67, 147, 0.4), rgba(253, 121, 168, 0.3));
+  animation: cta-pulse 2.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Dot grid pattern */
+.hero-dot-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: radial-gradient(circle, rgba(232, 67, 147, 0.07) 1px, transparent 1px);
+  background-size: 40px 40px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 40%, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 40%, black 30%, transparent 80%);
+}
+
+/* Animated gradient underline */
+@keyframes underline-flow {
+  0% {
+    background-position: 0% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.hero-gradient-underline {
+  position: relative;
+  display: inline;
+}
+
+.hero-gradient-underline::after {
+  content: "";
+  position: absolute;
+  bottom: 2px;
+  left: 0;
+  right: 0;
+  height: 6px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #e84393, #fd79a8, #a29bfe, #e84393);
+  background-size: 200% auto;
+  animation: underline-flow 3s linear infinite;
+  opacity: 0.35;
+}
+
+/* Glassmorphic hero mockup card */
+@keyframes mockup-float {
+
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2deg);
+  }
+
+  50% {
+    transform: translateY(-12px) rotate(-1deg);
+  }
+}
+
+@keyframes mockup-shimmer {
+  0% {
+    left: -100%;
+  }
+
+  100% {
+    left: 200%;
+  }
+}
+
+.hero-mockup-card {
+  position: relative;
+  background: rgba(255, 255, 255, 0.18);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.45);
+  border-radius: 20px;
+  padding: 20px;
+  box-shadow:
+    0 12px 40px rgba(232, 67, 147, 0.08),
+    0 4px 16px rgba(0, 0, 0, 0.04),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  animation: mockup-float 8s ease-in-out infinite;
+  overflow: hidden;
+}
+
+.hero-mockup-card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  animation: mockup-shimmer 4s ease-in-out infinite;
+  pointer-events: none;
+}
+
+/* Stat card with hover lift */
+.hero-stat-item {
+  text-align: center;
+  padding: 8px 0;
+  transition: transform 0.3s ease;
+  cursor: default;
+}
+
+.hero-stat-item:hover {
+  transform: translateY(-3px);
+}
+
+.hero-stat-divider {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(180deg, transparent, rgba(232, 67, 147, 0.25), transparent);
+  align-self: center;
+}
+
+/* Badge shimmer */
+@keyframes badge-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.hero-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 24px;
+  border-radius: 9999px;
+  border: 1px solid rgba(232, 67, 147, 0.2);
+  background: rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  box-shadow:
+    0 2px 12px rgba(232, 67, 147, 0.08),
+    inset 0 1px 0 rgba(255, 255, 255, 0.6);
+  overflow: hidden;
+}
+
+.hero-badge::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent 0%, rgba(232, 67, 147, 0.06) 50%, transparent 100%);
+  background-size: 200% 100%;
+  animation: badge-shimmer 3s ease-in-out infinite;
+}
+
+/* Responsive hero layout */
+@media (max-width: 900px) {
+  .hero-mockup-wrapper {
+    display: none !important;
+  }
+
+  .hero-content-wrapper {
+    text-align: center !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .hero-content-wrapper .hero-badge {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .hero-cta-row {
+    justify-content: center !important;
+  }
+
+  .hero-stats-strip {
+    padding: 18px 12px !important;
+    border-radius: 18px !important;
+  }
+
+  .hero-stat-sep {
+    margin: 0 10px !important;
+    height: 36px !important;
+  }
+
+  .hero-stat-value {
+    font-size: 1.4rem !important;
+  }
+
+  .hero-stat-label {
+    font-size: 10px !important;
+    letter-spacing: 0.3px !important;
+    margin-top: 4px !important;
+  }
+
+  .hero-stats-outer {
+    margin-top: 20px ;
+    padding: 0 16px !important;
+  }
 }
 
 /* ============ Noise texture overlay (subtle on light bg) ============ */
@@ -461,6 +711,7 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
     opacity: 0;
     transform: translateY(20px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -472,6 +723,7 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
     opacity: 0;
     transform: scale(0.92);
   }
+
   to {
     opacity: 1;
     transform: scale(1);
@@ -483,6 +735,7 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
     opacity: 0;
     transform: translateX(-20px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -494,13 +747,16 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
     opacity: 0;
     transform: scale(0.3);
   }
+
   50% {
     opacity: 1;
     transform: scale(1.05);
   }
+
   70% {
     transform: scale(0.9);
   }
+
   100% {
     opacity: 1;
     transform: scale(1);
@@ -511,6 +767,7 @@ input[type="date"].analytics-date::-webkit-calendar-picker-indicator:hover {
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
