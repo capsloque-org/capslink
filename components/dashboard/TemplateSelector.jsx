@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { TEMPLATES } from "@/lib/profileTemplates";
 import { Palette, Check, Loader2 } from "lucide-react";
 
@@ -14,14 +13,19 @@ export default function TemplateSelector({ profile, onUpdate }) {
         setActiveId(templateId);
         setSaving(true);
 
-        const { error } = await supabase
-            .from("profiles")
-            .update({ template: templateId })
-            .eq("id", profile.id);
+        try {
+            const res = await fetch("/api/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: profile.id, template: templateId }),
+            });
 
-        if (!error) {
-            onUpdate({ ...profile, template: templateId });
-        } else {
+            if (res.ok) {
+                onUpdate({ ...profile, template: templateId });
+            } else {
+                setActiveId(profile?.template || "glass");
+            }
+        } catch {
             setActiveId(profile?.template || "glass");
         }
         setSaving(false);

@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { AtSign, Check, Loader2, AlertCircle, ArrowRight, Sparkles } from "lucide-react";
 
 export default function UsernameForm({ userId, onClaimed }) {
@@ -17,12 +16,13 @@ export default function UsernameForm({ userId, onClaimed }) {
             return;
         }
         setChecking(true);
-        const { data } = await supabase
-            .from("profiles")
-            .select("username")
-            .eq("username", value.toLowerCase())
-            .single();
-        setAvailable(!data);
+        try {
+            const res = await fetch(`/api/username?username=${encodeURIComponent(value.toLowerCase())}`);
+            const data = await res.json();
+            setAvailable(data.available);
+        } catch {
+            setAvailable(null);
+        }
         setChecking(false);
     };
 
@@ -47,21 +47,30 @@ export default function UsernameForm({ userId, onClaimed }) {
         setLoading(true);
         setError("");
 
-        const { error: insertError } = await supabase.from("profiles").insert({
-            id: userId,
-            username: username.toLowerCase(),
-            display_name: "",
-            bio: "",
-            avatar_url: "",
-        });
+        try {
+            const res = await fetch("/api/profile", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: userId,
+                    username: username.toLowerCase(),
+                    display_name: "",
+                    bio: "",
+                    avatar_url: "",
+                }),
+            });
+            const data = await res.json();
 
-        if (insertError) {
-            setError(insertError.message);
-            setLoading(false);
-            return;
+            if (!res.ok) {
+                setError(data.error || "Failed to claim username");
+                setLoading(false);
+                return;
+            }
+
+            onClaimed(username.toLowerCase());
+        } catch {
+            setError("Network error. Please try again.");
         }
-
-        onClaimed(username.toLowerCase());
         setLoading(false);
     };
 

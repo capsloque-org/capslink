@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "@clerk/nextjs";
-import { supabase } from "@/lib/supabase";
 import {
     Loader2,
     ExternalLink,
@@ -29,32 +28,33 @@ export default function DashboardPage() {
 
     useEffect(() => {
         if (isLoaded && user) {
-            if (supabase) {
-                fetchProfile();
-            } else {
-                setLoading(false);
-            }
+            fetchProfile();
         }
     }, [isLoaded, user]);
 
     const fetchProfile = async () => {
         setLoading(true);
-        const { data: profileData } = await supabase
-            .from("profiles")
-            .select("*")
-            .eq("id", user.id)
-            .single();
+        try {
+            const profileRes = await fetch(`/api/profile?userId=${user.id}`);
+            const profileData = await profileRes.json();
 
-        if (profileData) {
-            setProfile(profileData);
+            if (profileData.profile) {
+                const p = profileData.profile;
+                // Normalize _id to id for frontend consistency
+                setProfile({ id: p._id || p.id, ...p });
 
-            const { data: linksData } = await supabase
-                .from("links")
-                .select("*")
-                .eq("user_id", user.id)
-                .order("order_index", { ascending: true });
+                const linksRes = await fetch(`/api/links?userId=${user.id}`);
+                const linksData = await linksRes.json();
 
-            setLinks(linksData || []);
+                // Normalize _id to id for each link
+                const normalizedLinks = (linksData.links || []).map((l) => ({
+                    id: l._id || l.id,
+                    ...l,
+                }));
+                setLinks(normalizedLinks);
+            }
+        } catch (err) {
+            console.error("Failed to fetch profile:", err);
         }
         setLoading(false);
     };
@@ -82,29 +82,6 @@ export default function DashboardPage() {
         return (
             <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Loader2 style={{ width: 32, height: 32, color: "#e84393", animation: "spin 1s linear infinite" }} />
-            </div>
-        );
-    }
-
-    if (!supabase) {
-        return (
-            <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px" }}>
-                <div style={{
-                    maxWidth: "400px", borderRadius: "24px",
-                    border: "1px solid rgba(255,255,255,0.5)",
-                    background: "rgba(255,255,255,0.25)",
-                    backdropFilter: "blur(24px)", padding: "32px", textAlign: "center",
-                    boxShadow: "0 8px 32px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.6)",
-                }}>
-                    <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "linear-gradient(135deg, rgba(253,166,0,0.15), rgba(234,88,12,0.08))", border: "1px solid rgba(255,255,255,0.3)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 24px" }}>
-                        <Zap style={{ width: 28, height: 28, color: "#f59e0b" }} />
-                    </div>
-                    <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#1a1a2e", marginBottom: "12px" }}>Setup Required</h2>
-                    <p style={{ fontSize: "0.875rem", color: "#6b6b8a", marginBottom: "16px", lineHeight: 1.5 }}>
-                        Supabase credentials are not configured yet.
-                    </p>
-                    <p style={{ fontSize: "0.75rem", color: "#9a9ab5" }}>Then restart the dev server.</p>
-                </div>
             </div>
         );
     }

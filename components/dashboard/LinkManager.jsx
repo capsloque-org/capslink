@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { supabase } from "@/lib/supabase";
 import { SOCIAL_PLATFORMS, detectPlatform, PlatformIcon } from "@/lib/socialPlatforms";
 import {
     Plus, Trash2, ChevronUp, ChevronDown, ExternalLink,
@@ -73,25 +72,30 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
         let url = newUrl.trim();
         if (!/^https?:\/\//i.test(url)) url = "https://" + url;
 
-        const { data, error } = await supabase
-            .from("links")
-            .insert({ user_id: userId, title: newTitle.trim(), url, order_index })
-            .select()
-            .single();
+        try {
+            const res = await fetch("/api/links", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ user_id: userId, title: newTitle.trim(), url, order_index }),
+            });
+            const data = await res.json();
 
-        if (!error && data) {
-            updateLinks([...links, data]);
-            setNewTitle("");
-            setNewUrl("");
-            setSelectedPlatform("");
-            setShowAddForm(false);
-        }
+            if (res.ok && data.link) {
+                updateLinks([...links, data.link]);
+                setNewTitle("");
+                setNewUrl("");
+                setSelectedPlatform("");
+                setShowAddForm(false);
+            }
+        } catch { /* ignore */ }
         setAdding(false);
     };
 
     const handleDelete = async (id) => {
-        const { error } = await supabase.from("links").delete().eq("id", id);
-        if (!error) updateLinks(links.filter((l) => l.id !== id));
+        try {
+            const res = await fetch(`/api/links?id=${id}`, { method: "DELETE" });
+            if (res.ok) updateLinks(links.filter((l) => l.id !== id));
+        } catch { /* ignore */ }
     };
 
     const startEdit = (link) => {
@@ -104,13 +108,16 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
         if (!editTitle.trim() || !editUrl.trim()) return;
         let url = editUrl.trim();
         if (!/^https?:\/\//i.test(url)) url = "https://" + url;
-        const { error } = await supabase
-            .from("links")
-            .update({ title: editTitle.trim(), url })
-            .eq("id", editingId);
-        if (!error) {
-            updateLinks(links.map((l) => (l.id === editingId ? { ...l, title: editTitle.trim(), url } : l)));
-        }
+        try {
+            const res = await fetch("/api/links", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: editingId, title: editTitle.trim(), url }),
+            });
+            if (res.ok) {
+                updateLinks(links.map((l) => (l.id === editingId ? { ...l, title: editTitle.trim(), url } : l)));
+            }
+        } catch { /* ignore */ }
         setEditingId(null);
     };
 
@@ -122,20 +129,31 @@ export default function LinkManager({ links: initialLinks, userId, onLinksChange
         const updatedWithIndex = updated.map((link, i) => ({ ...link, order_index: i }));
         updateLinks(updatedWithIndex);
         await Promise.all([
-            supabase.from("links").update({ order_index: updatedWithIndex[index].order_index }).eq("id", updatedWithIndex[index].id),
-            supabase.from("links").update({ order_index: updatedWithIndex[newIndex].order_index }).eq("id", updatedWithIndex[newIndex].id),
+            fetch("/api/links", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: updatedWithIndex[index].id, order_index: updatedWithIndex[index].order_index }),
+            }),
+            fetch("/api/links", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: updatedWithIndex[newIndex].id, order_index: updatedWithIndex[newIndex].order_index }),
+            }),
         ]);
     };
 
     const toggleShowIcon = async (link) => {
         const newVal = !link.show_icon;
-        const { error } = await supabase
-            .from("links")
-            .update({ show_icon: newVal })
-            .eq("id", link.id);
-        if (!error) {
-            updateLinks(links.map((l) => (l.id === link.id ? { ...l, show_icon: newVal } : l)));
-        }
+        try {
+            const res = await fetch("/api/links", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id: link.id, show_icon: newVal }),
+            });
+            if (res.ok) {
+                updateLinks(links.map((l) => (l.id === link.id ? { ...l, show_icon: newVal } : l)));
+            }
+        } catch { /* ignore */ }
     };
 
     const filteredPlatforms = SOCIAL_PLATFORMS.filter((p) =>

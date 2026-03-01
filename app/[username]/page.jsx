@@ -1,4 +1,4 @@
-import { supabase } from "@/lib/supabase";
+import { getDb, ensureIndexes } from "@/lib/mongodb";
 import { notFound } from "next/navigation";
 import { detectPlatform, PlatformIcon } from "@/lib/socialPlatforms";
 import { getTemplate } from "@/lib/profileTemplates";
@@ -7,54 +7,55 @@ import ClickableLink from "@/components/ClickableLink";
 
 // Dynamic metadata for SEO
 export async function generateMetadata({ params }) {
-    if (!supabase) return { title: "qloque — Setup Required" };
+    try {
+        await ensureIndexes();
+        const db = await getDb();
+        const { username } = await params;
 
-    const { username } = await params;
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("username, display_name, bio")
-        .eq("username", username)
-        .single();
+        const profile = await db.collection("profiles").findOne(
+            { username },
+            { projection: { username: 1, display_name: 1, bio: 1 } }
+        );
 
-    if (!profile) {
-        return { title: "Profile Not Found — qloque" };
-    }
+        if (!profile) {
+            return { title: "Profile Not Found — qloque" };
+        }
 
-    const name = profile.display_name || profile.username;
-    return {
-        title: `${name} — qloque`,
-        description:
-            profile.bio || `Check out ${name}'s links on qloque by CAPSLOQUE.`,
-        openGraph: {
+        const name = profile.display_name || profile.username;
+        return {
             title: `${name} — qloque`,
             description:
                 profile.bio || `Check out ${name}'s links on qloque by CAPSLOQUE.`,
-        },
-    };
+            openGraph: {
+                title: `${name} — qloque`,
+                description:
+                    profile.bio || `Check out ${name}'s links on qloque by CAPSLOQUE.`,
+            },
+        };
+    } catch {
+        return { title: "qloque — Setup Required" };
+    }
 }
 
 export default async function ProfilePage({ params }) {
-    if (!supabase) {
-        notFound();
-    }
-
+    await ensureIndexes();
+    const db = await getDb();
     const { username } = await params;
 
-    const { data: profile } = await supabase
-        .from("profiles")
-        .select("*")
-        .eq("username", username)
-        .single();
+    const profile = await db.collection("profiles").findOne({ username });
 
     if (!profile) {
         notFound();
     }
 
-    const { data: links } = await supabase
-        .from("links")
-        .select("*")
-        .eq("user_id", profile.id)
-        .order("order_index", { ascending: true });
+    const linksRaw = await db
+        .collection("links")
+        .find({ user_id: profile._id })
+        .sort({ order_index: 1 })
+        .toArray();
+
+    // Normalize _id to id for frontend compatibility
+    const links = linksRaw.map((l) => ({ id: l._id, ...l }));
 
     const displayName = profile.display_name || profile.username;
     const template = getTemplate(profile.template);

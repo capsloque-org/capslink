@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { supabase } from "@/lib/supabase";
 import { User, FileText, Image, Save, Loader2, Check, ImageIcon } from "lucide-react";
 
 export default function ProfileEditor({ profile, onUpdate }) {
@@ -17,21 +16,27 @@ export default function ProfileEditor({ profile, onUpdate }) {
         setSaving(true);
         setSaved(false);
 
-        const { error } = await supabase
-            .from("profiles")
-            .update({
-                display_name: displayName,
-                bio: bio,
-                avatar_url: avatarUrl,
-                banner_url: bannerUrl,
-            })
-            .eq("id", profile.id);
+        try {
+            const res = await fetch("/api/profile", {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    id: profile.id,
+                    display_name: displayName,
+                    bio: bio,
+                    avatar_url: avatarUrl,
+                    banner_url: bannerUrl,
+                }),
+            });
 
-        setSaving(false);
-        if (!error) {
-            setSaved(true);
-            onUpdate({ ...profile, display_name: displayName, bio, avatar_url: avatarUrl, banner_url: bannerUrl });
-            setTimeout(() => setSaved(false), 2000);
+            setSaving(false);
+            if (res.ok) {
+                setSaved(true);
+                onUpdate({ ...profile, display_name: displayName, bio, avatar_url: avatarUrl, banner_url: bannerUrl });
+                setTimeout(() => setSaved(false), 2000);
+            }
+        } catch {
+            setSaving(false);
         }
     };
 
